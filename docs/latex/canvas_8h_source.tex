@@ -1,0 +1,30 @@
+\doxysection{canvas.\+h}
+\hypertarget{canvas_8h_source}{}\label{canvas_8h_source}\index{src/canvas.h@{src/canvas.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ CANVAS\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ CANVAS\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <stddef.h>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <bob.h>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00009\ \ \ \ \ uint32\_t\ *pixels;}
+\DoxyCodeLine{00010\ \ \ \ \ BOB\_Pixelbuffer\_Handle\ pb;}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ width;}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ height;}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ scale;}
+\DoxyCodeLine{00014\ \}\ \doxymbox{\hyperlink{structCanvas}{Canvas}};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keywordtype}{void}\ canvas\_init(\doxymbox{\hyperlink{structCanvas}{Canvas}}\ *c,\ \textcolor{keywordtype}{size\_t}\ width,\ \textcolor{keywordtype}{size\_t}\ height,\ \textcolor{keywordtype}{size\_t}\ scale,\ uint32\_t\ default\_colour,\ BOB\_Renderer\_Handle\ r);}
+\DoxyCodeLine{00017\ \textcolor{keywordtype}{void}\ canvas\_free(\doxymbox{\hyperlink{structCanvas}{Canvas}}\ *c,\ BOB\_Renderer\_Handle\ r);}
+\DoxyCodeLine{00018\ \textcolor{keywordtype}{void}\ canvas\_draw(\doxymbox{\hyperlink{structCanvas}{Canvas}}\ *c,\ BOB\_Renderer\_Handle\ renderer);}
+\DoxyCodeLine{00019\ \textcolor{keywordtype}{void}\ canvas\_set\_pixel(\doxymbox{\hyperlink{structCanvas}{Canvas}}\ *c,\ uint32\_t\ x,\ uint32\_t\ y,\ uint32\_t\ colour);}
+\DoxyCodeLine{00020\ \textcolor{keywordtype}{void}\ canvas\_clear\_pixel(\doxymbox{\hyperlink{structCanvas}{Canvas}}\ *c,\ uint32\_t\ x,\ uint32\_t\ y);}
+\DoxyCodeLine{00021\ \textcolor{keywordtype}{void}\ canvas\_print(\doxymbox{\hyperlink{structCanvas}{Canvas}}\ *c);}
+\DoxyCodeLine{00022\ \textcolor{keywordtype}{void}\ canvas\_bresenham(\doxymbox{\hyperlink{structCanvas}{Canvas}}\ *c,\ uint32\_t\ sx,\ uint32\_t\ sy,\ uint32\_t\ ex,\ uint32\_t\ ey,\ uint32\_t\ colour);}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}
