@@ -1,0 +1,1 @@
+12/10/26: Setup GitHub repo and project. Implemented basic drawing canvas. Can only draw black lines on white canvas. Implemented Bresenham's line algorithm so drawing was easier

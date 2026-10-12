@@ -1,0 +1,49 @@
+============================================ COMPARISONS TO OTHER SOFTWARE ==============================================
+Will be using Spine as main comparison software as Dragon Bones isn't supported on Linux.
+Use Moho: https://moho.lostmarble.com/pages/features as the actual inspirational software
+See this article on how Dead Cells acheived its faux pixel art animations: https://www.gamedeveloper.com/production/art-design-deep-dive-using-a-3d-pipeline-for-2d-animation-in-i-dead-cells-i- . Use this as a comparison point for pixelating 3D models/textures
+Use Blasphemous (game (or maybe ROR Returns?) as comparison for hand drawn 2D animations.
+
+============================================ DEVELOPMENT NOTES ============================================
+Rendering - BOB
+UI - Clay
+Windows/User input - GLFW
+Image loading/saving - stb_image
+
+If we do multithreading, will have to use pthreads for linux/mac and then have to use the win32 api for windows: https://learn.microsoft.com/en-us/windows/win32/procthread/creating-threads
+
+Ideas on how to do various operations:
+Rotation already know how to do
+Stretching/Scaling: Look at every pixel in the scaled image and divide its coordinate on the axis being stretched/scaled on by the scale factor to find the colour of the pixel in the original image
+Shearing?
+
+Deforming a sprite on a joint: Could make a deadzone around the joint?
+============================================ FEATURE LIST ==========================================
+# Basic features
+- Ability to draw the sprite in editor
+- Ability to load sprites into the editor
+
+# Animation Editor
+- Support basic sprite operations: rotation, stretching/scaling, shearing
+- Allow use of bones for sprite animation/deformation
+- Allow the use of bones to make transitional animations such as rotations or deformations (like smart bones from Moho)
+- Masking out certain sections for animations
+- Pixel art specific animation techniques: Subpixel animation
+- IK Support
+
+# Data Export
+- Allow saving animation frames to a spritesheet
+- Allow export of bone and animation data alongside original sprite images
+- Create API for parsing this data
+- Integrate this API into at least one existing game engine (Godot since it is open source) to demonstrate how it would work
+
+# Extra Features:
+- Support common pixel art effects such as blurs, explosions etc
+- Support adding skins to rigs
+- Animation and effects using Bezier curves/easing functions: 
+    https://blog.febucci.com/2018/08/easing-functions/
+    https://easings.net/
+- Create particle engine for adding effects for animations
+- Allow use of shaders to enhance produced animations
+
+- TALK ABOUT HOW WILL FOLLOW BCS CODES OF CONDUCT IN REPORTS
