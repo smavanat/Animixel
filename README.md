@@ -22,3 +22,5 @@ cmake ..
 make
 ./amxl
 ```
+  
+This project makes use of [GLFW](https://www.glfw.org/), [stb_image](https://github.com/nothings/stb/tree/master), [BOB](https://github.com/smavanat/BOB), [Clay](https://github.com/nicbarker/clay) and [Doxygen](https://www.doxygen.nl/index.html)
