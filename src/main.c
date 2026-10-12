@@ -168,8 +168,8 @@ int init(GLFWwindow **window) {
 void process_input(GLFWwindow *window) {
     if(glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
         if(handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED || handler.key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED) {
-            uint32_t ex = (uint32_t)(handler.mouseX) / c.scale, ey = (uint32_t)(handler.mouseY) / c.scale;
-            uint32_t sx = (uint32_t)(handler.prevX) / c.scale, sy = (uint32_t)(handler.prevY) / c.scale;
+            uint32_t ex = (uint32_t)(handler.mouse_x) / c.scale, ey = (uint32_t)(handler.mouse_y) / c.scale;
+            uint32_t sx = (uint32_t)(handler.prev_x) / c.scale, sy = (uint32_t)(handler.prev_y) / c.scale;
             canvas_set_pixel(&c, ex, ey, 0);
 
             if(handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED) {
