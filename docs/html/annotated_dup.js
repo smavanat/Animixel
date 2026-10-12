@@ -1,5 +1,5 @@
 var annotated_dup =
 [
-    [ "Canvas", "structCanvas.html", null ],
-    [ "Input_Handler", "structInput__Handler.html", null ]
+    [ "Canvas", "structCanvas.html", "structCanvas" ],
+    [ "Input_Handler", "structInput__Handler.html", "structInput__Handler" ]
 ];

@@ -112,40 +112,47 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('canvas_8h_sour
   <div class="headertitle"><div class="title">canvas.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef CANVAS_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define CANVAS_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;bob.h&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="foldopen" id="foldopen00008" data-start="{" data-end="};">
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structCanvas.html">    8</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    uint32_t *pixels;</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    BOB_Pixelbuffer_Handle pb;</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordtype">size_t</span> width;</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordtype">size_t</span> height;</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordtype">size_t</span> scale;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>} <a class="code hl_struct" href="structCanvas.html">Canvas</a>;</div>
+<a href="canvas_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef CANVAS_H</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define CANVAS_H</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;bob.h&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span></div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structCanvas.html">   14</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structCanvas.html#a224d0052c4bffc78c9d6171662f0af1c">   15</a></span>    uint32_t *<a class="code hl_variable" href="structCanvas.html#a224d0052c4bffc78c9d6171662f0af1c">pixels</a>; </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structCanvas.html#a07c0212a8fb5601aadd91f2177ff76e2">   16</a></span>    BOB_Pixelbuffer_Handle <a class="code hl_variable" href="structCanvas.html#a07c0212a8fb5601aadd91f2177ff76e2">pb</a>; </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structCanvas.html#a856389582a6c55ce48671a9fcbabf757">   17</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="structCanvas.html#a856389582a6c55ce48671a9fcbabf757">width</a>;   </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structCanvas.html#a071e9e995fbaa6e9cac467fdd12fe248">   18</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="structCanvas.html#a071e9e995fbaa6e9cac467fdd12fe248">height</a>;  </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structCanvas.html#ac328f014b52a82904d2b353c41c929d0">   19</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="structCanvas.html#ac328f014b52a82904d2b353c41c929d0">scale</a>;   </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>} <a class="code hl_struct" href="structCanvas.html">Canvas</a>;</div>
 </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">void</span> canvas_init(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, <span class="keywordtype">size_t</span> width, <span class="keywordtype">size_t</span> height, <span class="keywordtype">size_t</span> scale, uint32_t default_colour, BOB_Renderer_Handle r);</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keywordtype">void</span> canvas_free(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, BOB_Renderer_Handle r);</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keywordtype">void</span> canvas_draw(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, BOB_Renderer_Handle renderer);</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">void</span> canvas_set_pixel(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, uint32_t x, uint32_t y, uint32_t colour);</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keywordtype">void</span> canvas_clear_pixel(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, uint32_t x, uint32_t y);</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keywordtype">void</span> canvas_print(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keywordtype">void</span> canvas_bresenham(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, uint32_t sx, uint32_t sy, uint32_t ex, uint32_t ey, uint32_t colour);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="astructCanvas_html"><div class="ttname"><a href="structCanvas.html">Canvas</a></div><div class="ttdef"><b>Definition</b> canvas.h:8</div></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keywordtype">void</span> canvas_init(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, <span class="keywordtype">size_t</span> width, <span class="keywordtype">size_t</span> height, <span class="keywordtype">size_t</span> scale, uint32_t default_colour, BOB_Renderer_Handle r);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keywordtype">void</span> canvas_free(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, BOB_Renderer_Handle r);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keywordtype">void</span> canvas_draw(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, BOB_Renderer_Handle renderer);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keywordtype">void</span> canvas_set_pixel(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, uint32_t x, uint32_t y, uint32_t colour);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keywordtype">void</span> canvas_clear_pixel(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, uint32_t x, uint32_t y);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keywordtype">void</span> canvas_print(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="keywordtype">void</span> canvas_bresenham(<a class="code hl_struct" href="structCanvas.html">Canvas</a> *c, uint32_t sx, uint32_t sy, uint32_t ex, uint32_t ey, uint32_t colour);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="astructCanvas_html"><div class="ttname"><a href="structCanvas.html">Canvas</a></div><div class="ttdoc">Struct that describes a drawing canvas.</div><div class="ttdef"><b>Definition</b> canvas.h:14</div></div>
+<div class="ttc" id="astructCanvas_html_a071e9e995fbaa6e9cac467fdd12fe248"><div class="ttname"><a href="structCanvas.html#a071e9e995fbaa6e9cac467fdd12fe248">Canvas::height</a></div><div class="ttdeci">size_t height</div><div class="ttdoc">Height of the canvas.</div><div class="ttdef"><b>Definition</b> canvas.h:18</div></div>
+<div class="ttc" id="astructCanvas_html_a07c0212a8fb5601aadd91f2177ff76e2"><div class="ttname"><a href="structCanvas.html#a07c0212a8fb5601aadd91f2177ff76e2">Canvas::pb</a></div><div class="ttdeci">BOB_Pixelbuffer_Handle pb</div><div class="ttdoc">Reference handle to the pixelbuffer that actually renders the canvas data to the screen.</div><div class="ttdef"><b>Definition</b> canvas.h:16</div></div>
+<div class="ttc" id="astructCanvas_html_a224d0052c4bffc78c9d6171662f0af1c"><div class="ttname"><a href="structCanvas.html#a224d0052c4bffc78c9d6171662f0af1c">Canvas::pixels</a></div><div class="ttdeci">uint32_t * pixels</div><div class="ttdoc">Array holding the pixel data.</div><div class="ttdef"><b>Definition</b> canvas.h:15</div></div>
+<div class="ttc" id="astructCanvas_html_a856389582a6c55ce48671a9fcbabf757"><div class="ttname"><a href="structCanvas.html#a856389582a6c55ce48671a9fcbabf757">Canvas::width</a></div><div class="ttdeci">size_t width</div><div class="ttdoc">Width of the canvas.</div><div class="ttdef"><b>Definition</b> canvas.h:17</div></div>
+<div class="ttc" id="astructCanvas_html_ac328f014b52a82904d2b353c41c929d0"><div class="ttname"><a href="structCanvas.html#ac328f014b52a82904d2b353c41c929d0">Canvas::scale</a></div><div class="ttdeci">size_t scale</div><div class="ttdoc">Scale factor of the canvas. Used when rendering.</div><div class="ttdef"><b>Definition</b> canvas.h:19</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>src</b></li><li class="navelem"><b>canvas.h</b></li>
+    <li class="navelem"><b>src</b></li><li class="navelem"><a href="canvas_8h.html">canvas.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
   </ul>
 </div>

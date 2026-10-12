@@ -1,0 +1,80 @@
+\doxysection{src/\+input.c File Reference}
+\hypertarget{input_8c}{}\label{input_8c}\index{src/input.c@{src/input.c}}
+{\ttfamily \+\#include "{}input.\+h"{}}\newline
+{\ttfamily \+\#include "{}stdio.\+h"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{input_8c_a1ecf77df2f99e59fb8c4075528802253}{input\+\_\+handler\+\_\+init}} (\doxymbox{\hyperlink{structInput__Handler}{Input\+\_\+\+Handler}} \texorpdfstring{$\ast$}{*}ih)
+\item 
+void \doxymbox{\hyperlink{input_8c_abffbafc05ce28fbe94e186d2cedcd7bd}{glfw\+\_\+mouse\+\_\+callback}} (GLFWwindow \texorpdfstring{$\ast$}{*}window, int key, int action, int mods)
+\begin{DoxyCompactList}\small\item\em Callback function to be used by glfw when a mouse button\textquotesingle{}s state changes If the new state is GLFW\+\_\+\+PRESS and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+RELEASED or KEY\+\_\+\+RELEASED, sets the state to KEY\+\_\+\+JUST\+\_\+\+PRESSED If the new state is GLFW\+\_\+\+PRESS and the old state stored in the input\+\_\+handler was KEY\+\_\+\+PRESSED or KEY\+\_\+\+JUST\+\_\+\+PRESSED, sets the state to KEY\+\_\+\+PRESSED If the new state is GLFW\+\_\+\+RELEASE and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+RELEASED or KEY\+\_\+\+RELEASED, sets the state to KEY\+\_\+\+RELEASED If the new state is GLFW\+\_\+\+RELEASE and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+PRESSED or KEY\+\_\+\+PRESSED, sets the state to KEY\+\_\+\+JUST\+\_\+\+RELEASED. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{input_8c_ae960f8e1e3b85e2af9774e881b62f552}{glfw\+\_\+key\+\_\+callback}} (GLFWwindow \texorpdfstring{$\ast$}{*}window, int key, int scancode, int action, int mods)
+\begin{DoxyCompactList}\small\item\em Callback function to be used by glfw when a key\textquotesingle{}s state changes If the new state is GLFW\+\_\+\+PRESS and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+RELEASED or KEY\+\_\+\+RELEASED, sets the state to KEY\+\_\+\+JUST\+\_\+\+PRESSED If the new state is GLFW\+\_\+\+PRESS and the old state stored in the input\+\_\+handler was KEY\+\_\+\+PRESSED or KEY\+\_\+\+JUST\+\_\+\+PRESSED, sets the state to KEY\+\_\+\+PRESSED If the new state is GLFW\+\_\+\+RELEASE and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+RELEASED or KEY\+\_\+\+RELEASED, sets the state to KEY\+\_\+\+RELEASED If the new state is GLFW\+\_\+\+RELEASE and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+PRESSED or KEY\+\_\+\+PRESSED, sets the state to KEY\+\_\+\+JUST\+\_\+\+RELEASED If the new state is GLFW\+\_\+\+REPEAT set the state to KEY\+\_\+\+PRESSED. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{input_8c_a392810fb779293a244444fde2c75e956}{update\+\_\+key\+\_\+state}} (\doxymbox{\hyperlink{structInput__Handler}{Input\+\_\+\+Handler}} \texorpdfstring{$\ast$}{*}ih)
+\begin{DoxyCompactList}\small\item\em Updates the key state of those not affected by glfw callbacks. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{input_8c_a2db72b1c51a738ae7a8046041c92d80c}{glfw\+\_\+cursor\+\_\+pos\+\_\+callback}} (GLFWwindow \texorpdfstring{$\ast$}{*}window, double xpos, double ypos)
+\begin{DoxyCompactList}\small\item\em Callback function to be used by glfw when the cursor position changes. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{input_8c_a3c77ad1bf556a06440cbb172e45b244d}{cursor\+\_\+in\+\_\+bounds}} (\doxymbox{\hyperlink{structInput__Handler}{Input\+\_\+\+Handler}} \texorpdfstring{$\ast$}{*}ih)
+\begin{DoxyCompactList}\small\item\em Simple checker that returns if the cursor is in the window\textquotesingle{}s bounds or not. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{input_8c_doc-func-members}
+\Hypertarget{input_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{input_8c_a3c77ad1bf556a06440cbb172e45b244d}\index{input.c@{input.c}!cursor\_in\_bounds@{cursor\_in\_bounds}}
+\index{cursor\_in\_bounds@{cursor\_in\_bounds}!input.c@{input.c}}
+\doxysubsubsection{\texorpdfstring{cursor\_in\_bounds()}{cursor\_in\_bounds()}}
+{\footnotesize\ttfamily \label{input_8c_a3c77ad1bf556a06440cbb172e45b244d} 
+int cursor\+\_\+in\+\_\+bounds (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structInput__Handler}{Input\+\_\+\+Handler}} \texorpdfstring{$\ast$}{*}}]{ih}{}\end{DoxyParamCaption})}
+
+
+
+Simple checker that returns if the cursor is in the window\textquotesingle{}s bounds or not. 
+
+\Hypertarget{input_8c_a2db72b1c51a738ae7a8046041c92d80c}\index{input.c@{input.c}!glfw\_cursor\_pos\_callback@{glfw\_cursor\_pos\_callback}}
+\index{glfw\_cursor\_pos\_callback@{glfw\_cursor\_pos\_callback}!input.c@{input.c}}
+\doxysubsubsection{\texorpdfstring{glfw\_cursor\_pos\_callback()}{glfw\_cursor\_pos\_callback()}}
+{\footnotesize\ttfamily \label{input_8c_a2db72b1c51a738ae7a8046041c92d80c} 
+void glfw\+\_\+cursor\+\_\+pos\+\_\+callback (\begin{DoxyParamCaption}\item[{GLFWwindow \texorpdfstring{$\ast$}{*}}]{window}{, }\item[{double}]{xpos}{, }\item[{double}]{ypos}{}\end{DoxyParamCaption})}
+
+
+
+Callback function to be used by glfw when the cursor position changes. 
+
+\Hypertarget{input_8c_ae960f8e1e3b85e2af9774e881b62f552}\index{input.c@{input.c}!glfw\_key\_callback@{glfw\_key\_callback}}
+\index{glfw\_key\_callback@{glfw\_key\_callback}!input.c@{input.c}}
+\doxysubsubsection{\texorpdfstring{glfw\_key\_callback()}{glfw\_key\_callback()}}
+{\footnotesize\ttfamily \label{input_8c_ae960f8e1e3b85e2af9774e881b62f552} 
+void glfw\+\_\+key\+\_\+callback (\begin{DoxyParamCaption}\item[{GLFWwindow \texorpdfstring{$\ast$}{*}}]{window}{, }\item[{int}]{key}{, }\item[{int}]{scancode}{, }\item[{int}]{action}{, }\item[{int}]{mods}{}\end{DoxyParamCaption})}
+
+
+
+Callback function to be used by glfw when a key\textquotesingle{}s state changes If the new state is GLFW\+\_\+\+PRESS and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+RELEASED or KEY\+\_\+\+RELEASED, sets the state to KEY\+\_\+\+JUST\+\_\+\+PRESSED If the new state is GLFW\+\_\+\+PRESS and the old state stored in the input\+\_\+handler was KEY\+\_\+\+PRESSED or KEY\+\_\+\+JUST\+\_\+\+PRESSED, sets the state to KEY\+\_\+\+PRESSED If the new state is GLFW\+\_\+\+RELEASE and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+RELEASED or KEY\+\_\+\+RELEASED, sets the state to KEY\+\_\+\+RELEASED If the new state is GLFW\+\_\+\+RELEASE and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+PRESSED or KEY\+\_\+\+PRESSED, sets the state to KEY\+\_\+\+JUST\+\_\+\+RELEASED If the new state is GLFW\+\_\+\+REPEAT set the state to KEY\+\_\+\+PRESSED. 
+
+\Hypertarget{input_8c_abffbafc05ce28fbe94e186d2cedcd7bd}\index{input.c@{input.c}!glfw\_mouse\_callback@{glfw\_mouse\_callback}}
+\index{glfw\_mouse\_callback@{glfw\_mouse\_callback}!input.c@{input.c}}
+\doxysubsubsection{\texorpdfstring{glfw\_mouse\_callback()}{glfw\_mouse\_callback()}}
+{\footnotesize\ttfamily \label{input_8c_abffbafc05ce28fbe94e186d2cedcd7bd} 
+void glfw\+\_\+mouse\+\_\+callback (\begin{DoxyParamCaption}\item[{GLFWwindow \texorpdfstring{$\ast$}{*}}]{window}{, }\item[{int}]{key}{, }\item[{int}]{action}{, }\item[{int}]{mods}{}\end{DoxyParamCaption})}
+
+
+
+Callback function to be used by glfw when a mouse button\textquotesingle{}s state changes If the new state is GLFW\+\_\+\+PRESS and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+RELEASED or KEY\+\_\+\+RELEASED, sets the state to KEY\+\_\+\+JUST\+\_\+\+PRESSED If the new state is GLFW\+\_\+\+PRESS and the old state stored in the input\+\_\+handler was KEY\+\_\+\+PRESSED or KEY\+\_\+\+JUST\+\_\+\+PRESSED, sets the state to KEY\+\_\+\+PRESSED If the new state is GLFW\+\_\+\+RELEASE and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+RELEASED or KEY\+\_\+\+RELEASED, sets the state to KEY\+\_\+\+RELEASED If the new state is GLFW\+\_\+\+RELEASE and the old state stored in the input\+\_\+handler was KEY\+\_\+\+JUST\+\_\+\+PRESSED or KEY\+\_\+\+PRESSED, sets the state to KEY\+\_\+\+JUST\+\_\+\+RELEASED. 
+
+\Hypertarget{input_8c_a1ecf77df2f99e59fb8c4075528802253}\index{input.c@{input.c}!input\_handler\_init@{input\_handler\_init}}
+\index{input\_handler\_init@{input\_handler\_init}!input.c@{input.c}}
+\doxysubsubsection{\texorpdfstring{input\_handler\_init()}{input\_handler\_init()}}
+{\footnotesize\ttfamily \label{input_8c_a1ecf77df2f99e59fb8c4075528802253} 
+void input\+\_\+handler\+\_\+init (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structInput__Handler}{Input\+\_\+\+Handler}} \texorpdfstring{$\ast$}{*}}]{ih}{}\end{DoxyParamCaption})}
+
+\Hypertarget{input_8c_a392810fb779293a244444fde2c75e956}\index{input.c@{input.c}!update\_key\_state@{update\_key\_state}}
+\index{update\_key\_state@{update\_key\_state}!input.c@{input.c}}
+\doxysubsubsection{\texorpdfstring{update\_key\_state()}{update\_key\_state()}}
+{\footnotesize\ttfamily \label{input_8c_a392810fb779293a244444fde2c75e956} 
+void update\+\_\+key\+\_\+state (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structInput__Handler}{Input\+\_\+\+Handler}} \texorpdfstring{$\ast$}{*}}]{ih}{}\end{DoxyParamCaption})}
+
+
+
+Updates the key state of those not affected by glfw callbacks. 
+

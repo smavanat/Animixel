@@ -1,9 +1,9 @@
 #include "input.h"
-#include "stdio.h"
+#include "GLFW/glfw3.h"
 
 void input_handler_init(Input_Handler *ih) {
-    ih->mouseX = 0;
-    ih->mouseY = 0;
+    ih->mouse_x = 0;
+    ih->mouse_y = 0;
 
     for(int i = 0; i < NUM_KEYS; i++) {
         ih->key_status[i] = KEY_RELEASED;
@@ -11,7 +11,9 @@ void input_handler_init(Input_Handler *ih) {
 }
 
 void glfw_mouse_callback(GLFWwindow *window, int key, int action, int mods) {
-    if(glfwGetWindowAttrib(window, GLFW_FOCUSED) && cursor_in_bounds(&handler) && key < 3) {
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    if(glfwGetWindowAttrib(window, GLFW_FOCUSED) && cursor_in_bounds(&handler, 0, 0, width, height) && key < 3) {
         int idx = MOUSE_BUTTON_LEFT+key;
         if(action == GLFW_PRESS) {
             if(handler.key_status[idx] == KEY_JUST_PRESSED) {
@@ -83,16 +85,16 @@ void update_key_state(Input_Handler *ih) {
 
 void glfw_cursor_pos_callback(GLFWwindow *window, double xpos, double ypos) {
     if(glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
-        handler.prevX = handler.mouseX;
-        handler.prevY = handler.mouseY;
-        handler.mouseX = xpos;
-        handler.mouseY = ypos;
+        handler.prev_x = handler.mouse_x;
+        handler.prev_y = handler.mouse_y;
+        handler.mouse_x = xpos;
+        handler.mouse_y = ypos;
     }
 }
 
-int cursor_in_bounds(Input_Handler *ih) {
-    if(ih->mouseX < 0 || ih->mouseX >= 800) return 0;
-    if(ih->mouseY < 0 || ih->mouseY >= 600) return 0;
+int cursor_in_bounds(Input_Handler *ih, float min_x, float min_y, float max_x, float max_y) {
+    if(ih->mouse_x < min_x || ih->mouse_x >= max_x) return 0;
+    if(ih->mouse_y < min_y || ih->mouse_y >= max_y) return 0;
     return 1;
 }
 

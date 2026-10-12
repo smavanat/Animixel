@@ -1,0 +1,183 @@
+\doxysection{src/\+main.c File Reference}
+\hypertarget{main_8c}{}\label{main_8c}\index{src/main.c@{src/main.c}}
+{\ttfamily \+\#include $<$stddef.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$string.\+h$>$}\newline
+{\ttfamily \+\#include "{}canvas.\+h"{}}\newline
+{\ttfamily \+\#include $<$bob.\+h$>$}\newline
+{\ttfamily \+\#include $<$GLFW/\+glfw3.\+h$>$}\newline
+{\ttfamily \+\#include $<$stb\+\_\+image.\+h$>$}\newline
+{\ttfamily \+\#include $<$sys/\+time.\+h$>$}\newline
+{\ttfamily \+\#include "{}input.\+h"{}}\newline
+{\ttfamily \+\#include $<$time.\+h$>$}\newline
+{\ttfamily \+\#include $<$unistd.\+h$>$}\newline
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{main_8c_a78c99ffd76a7bb3c8c74db76207e9ab4}{\+\_\+\+XOPEN\+\_\+\+SOURCE}}~500
+\item 
+\+\#define \doxymbox{\hyperlink{main_8c_a3024ccd4a9af5109d24e6c57565d74a1}{\+\_\+\+POSIX\+\_\+\+C\+\_\+\+SOURCE}}~199309L
+\item 
+\+\#define \doxymbox{\hyperlink{main_8c_a8de3ed741dadc9c979a4ff17c0a9116e}{NDEBUG}}
+\item 
+\+\#define \doxymbox{\hyperlink{main_8c_ac6547c466553e0c65947de749066cb13}{BOB\+\_\+\+INCLUDE\+\_\+\+GLAD}}
+\item 
+\+\#define \doxymbox{\hyperlink{main_8c_a8c456ef629c519bd5fb94df29391bb35}{BOB\+\_\+\+IMPLEMENTATION}}
+\item 
+\+\#define \doxymbox{\hyperlink{main_8c_a18372412ad2fc3ce1e3240b3cf0efe78}{STB\+\_\+\+IMAGE\+\_\+\+IMPLEMENTATION}}
+\item 
+\+\#define \doxymbox{\hyperlink{main_8c_ae2f99e05f64d0383aee9bd75a52c4fbb}{FRAME\+\_\+\+RATE}}~1000 /\+ 60.\+0f
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{main_8c_a73a8d7e98be85f67961ca682c291033a}{sleep\+\_\+ms}} (int milliseconds)
+\begin{DoxyCompactList}\small\item\em Cross-\/platform sleep function. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{main_8c_a5180f7bf2b71421af837035824a8c8ac}{framebuffer\+\_\+size\+\_\+callback}} (GLFWwindow \texorpdfstring{$\ast$}{*}window, int width, int height)
+\item 
+int \doxymbox{\hyperlink{main_8c_a352214d6e6127515e838ef6966617617}{init}} (GLFWwindow \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}window)
+\item 
+void \doxymbox{\hyperlink{main_8c_a8dc765ef2fc3080e907a9727089589b9}{process\+\_\+input}} (GLFWwindow \texorpdfstring{$\ast$}{*}window)
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{main_8c_ad14c5f1762dcf348bbab7738b041debb}{load\+\_\+tex}} (char \texorpdfstring{$\ast$}{*}path, BOB\+\_\+\+Font\+\_\+\+Handle font)
+\item 
+int \doxymbox{\hyperlink{main_8c_a840291bc02cba5474a4cb46a9b9566fe}{main}} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+GLFWwindow \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{main_8c_a80de27bd7dc4e2b2ad3d5895b97a70f0}{window}}
+\item 
+BOB\+\_\+\+Renderer\+\_\+\+Handle \doxymbox{\hyperlink{main_8c_a4c88fcc5053a44ba0ac38f6d2c9fee11}{r}}
+\item 
+\doxymbox{\hyperlink{structInput__Handler}{Input\+\_\+\+Handler}} \doxymbox{\hyperlink{main_8c_a9f6055c4aa218163420358cb0dbdd569}{handler}}
+\item 
+\doxymbox{\hyperlink{structCanvas}{Canvas}} \doxymbox{\hyperlink{main_8c_ac2cb7d3de965058b226346b495270a2d}{c}}
+\end{DoxyCompactItemize}
+
+
+\label{main_8c_doc-define-members}
+\Hypertarget{main_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{main_8c_a3024ccd4a9af5109d24e6c57565d74a1}\index{main.c@{main.c}!\_POSIX\_C\_SOURCE@{\_POSIX\_C\_SOURCE}}
+\index{\_POSIX\_C\_SOURCE@{\_POSIX\_C\_SOURCE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{\_POSIX\_C\_SOURCE}{\_POSIX\_C\_SOURCE}}
+{\footnotesize\ttfamily \label{main_8c_a3024ccd4a9af5109d24e6c57565d74a1} 
+\+\#define \+\_\+\+POSIX\+\_\+\+C\+\_\+\+SOURCE~199309L}
+
+\Hypertarget{main_8c_a78c99ffd76a7bb3c8c74db76207e9ab4}\index{main.c@{main.c}!\_XOPEN\_SOURCE@{\_XOPEN\_SOURCE}}
+\index{\_XOPEN\_SOURCE@{\_XOPEN\_SOURCE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{\_XOPEN\_SOURCE}{\_XOPEN\_SOURCE}}
+{\footnotesize\ttfamily \label{main_8c_a78c99ffd76a7bb3c8c74db76207e9ab4} 
+\+\#define \+\_\+\+XOPEN\+\_\+\+SOURCE~500}
+
+\Hypertarget{main_8c_a8c456ef629c519bd5fb94df29391bb35}\index{main.c@{main.c}!BOB\_IMPLEMENTATION@{BOB\_IMPLEMENTATION}}
+\index{BOB\_IMPLEMENTATION@{BOB\_IMPLEMENTATION}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{BOB\_IMPLEMENTATION}{BOB\_IMPLEMENTATION}}
+{\footnotesize\ttfamily \label{main_8c_a8c456ef629c519bd5fb94df29391bb35} 
+\+\#define BOB\+\_\+\+IMPLEMENTATION}
+
+\Hypertarget{main_8c_ac6547c466553e0c65947de749066cb13}\index{main.c@{main.c}!BOB\_INCLUDE\_GLAD@{BOB\_INCLUDE\_GLAD}}
+\index{BOB\_INCLUDE\_GLAD@{BOB\_INCLUDE\_GLAD}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{BOB\_INCLUDE\_GLAD}{BOB\_INCLUDE\_GLAD}}
+{\footnotesize\ttfamily \label{main_8c_ac6547c466553e0c65947de749066cb13} 
+\+\#define BOB\+\_\+\+INCLUDE\+\_\+\+GLAD}
+
+\Hypertarget{main_8c_ae2f99e05f64d0383aee9bd75a52c4fbb}\index{main.c@{main.c}!FRAME\_RATE@{FRAME\_RATE}}
+\index{FRAME\_RATE@{FRAME\_RATE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{FRAME\_RATE}{FRAME\_RATE}}
+{\footnotesize\ttfamily \label{main_8c_ae2f99e05f64d0383aee9bd75a52c4fbb} 
+\+\#define FRAME\+\_\+\+RATE~1000 /\+ 60.\+0f}
+
+\Hypertarget{main_8c_a8de3ed741dadc9c979a4ff17c0a9116e}\index{main.c@{main.c}!NDEBUG@{NDEBUG}}
+\index{NDEBUG@{NDEBUG}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{NDEBUG}{NDEBUG}}
+{\footnotesize\ttfamily \label{main_8c_a8de3ed741dadc9c979a4ff17c0a9116e} 
+\+\#define NDEBUG}
+
+\Hypertarget{main_8c_a18372412ad2fc3ce1e3240b3cf0efe78}\index{main.c@{main.c}!STB\_IMAGE\_IMPLEMENTATION@{STB\_IMAGE\_IMPLEMENTATION}}
+\index{STB\_IMAGE\_IMPLEMENTATION@{STB\_IMAGE\_IMPLEMENTATION}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{STB\_IMAGE\_IMPLEMENTATION}{STB\_IMAGE\_IMPLEMENTATION}}
+{\footnotesize\ttfamily \label{main_8c_a18372412ad2fc3ce1e3240b3cf0efe78} 
+\+\#define STB\+\_\+\+IMAGE\+\_\+\+IMPLEMENTATION}
+
+
+
+\label{main_8c_doc-func-members}
+\Hypertarget{main_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{main_8c_a5180f7bf2b71421af837035824a8c8ac}\index{main.c@{main.c}!framebuffer\_size\_callback@{framebuffer\_size\_callback}}
+\index{framebuffer\_size\_callback@{framebuffer\_size\_callback}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{framebuffer\_size\_callback()}{framebuffer\_size\_callback()}}
+{\footnotesize\ttfamily \label{main_8c_a5180f7bf2b71421af837035824a8c8ac} 
+void framebuffer\+\_\+size\+\_\+callback (\begin{DoxyParamCaption}\item[{GLFWwindow \texorpdfstring{$\ast$}{*}}]{window}{, }\item[{int}]{width}{, }\item[{int}]{height}{}\end{DoxyParamCaption})}
+
+\Hypertarget{main_8c_a352214d6e6127515e838ef6966617617}\index{main.c@{main.c}!init@{init}}
+\index{init@{init}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily \label{main_8c_a352214d6e6127515e838ef6966617617} 
+int init (\begin{DoxyParamCaption}\item[{GLFWwindow \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{window}{}\end{DoxyParamCaption})}
+
+\Hypertarget{main_8c_ad14c5f1762dcf348bbab7738b041debb}\index{main.c@{main.c}!load\_tex@{load\_tex}}
+\index{load\_tex@{load\_tex}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{load\_tex()}{load\_tex()}}
+{\footnotesize\ttfamily \label{main_8c_ad14c5f1762dcf348bbab7738b041debb} 
+uint32\+\_\+t load\+\_\+tex (\begin{DoxyParamCaption}\item[{char \texorpdfstring{$\ast$}{*}}]{path}{, }\item[{BOB\+\_\+\+Font\+\_\+\+Handle}]{font}{}\end{DoxyParamCaption})}
+
+\Hypertarget{main_8c_a840291bc02cba5474a4cb46a9b9566fe}\index{main.c@{main.c}!main@{main}}
+\index{main@{main}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily \label{main_8c_a840291bc02cba5474a4cb46a9b9566fe} 
+int main (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{main_8c_a8dc765ef2fc3080e907a9727089589b9}\index{main.c@{main.c}!process\_input@{process\_input}}
+\index{process\_input@{process\_input}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{process\_input()}{process\_input()}}
+{\footnotesize\ttfamily \label{main_8c_a8dc765ef2fc3080e907a9727089589b9} 
+void process\+\_\+input (\begin{DoxyParamCaption}\item[{GLFWwindow \texorpdfstring{$\ast$}{*}}]{window}{}\end{DoxyParamCaption})}
+
+\Hypertarget{main_8c_a73a8d7e98be85f67961ca682c291033a}\index{main.c@{main.c}!sleep\_ms@{sleep\_ms}}
+\index{sleep\_ms@{sleep\_ms}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{sleep\_ms()}{sleep\_ms()}}
+{\footnotesize\ttfamily \label{main_8c_a73a8d7e98be85f67961ca682c291033a} 
+void sleep\+\_\+ms (\begin{DoxyParamCaption}\item[{int}]{milliseconds}{}\end{DoxyParamCaption})}
+
+
+
+Cross-\/platform sleep function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em milliseconds} & the time the thread should sleep for in milliseconds \\
+\hline
+\end{DoxyParams}
+
+
+\label{main_8c_doc-var-members}
+\Hypertarget{main_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{main_8c_ac2cb7d3de965058b226346b495270a2d}\index{main.c@{main.c}!c@{c}}
+\index{c@{c}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{c}{c}}
+{\footnotesize\ttfamily \label{main_8c_ac2cb7d3de965058b226346b495270a2d} 
+\doxymbox{\hyperlink{structCanvas}{Canvas}} c}
+
+\Hypertarget{main_8c_a9f6055c4aa218163420358cb0dbdd569}\index{main.c@{main.c}!handler@{handler}}
+\index{handler@{handler}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{handler}{handler}}
+{\footnotesize\ttfamily \label{main_8c_a9f6055c4aa218163420358cb0dbdd569} 
+\doxymbox{\hyperlink{structInput__Handler}{Input\+\_\+\+Handler}} handler}
+
+\Hypertarget{main_8c_a4c88fcc5053a44ba0ac38f6d2c9fee11}\index{main.c@{main.c}!r@{r}}
+\index{r@{r}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{r}{r}}
+{\footnotesize\ttfamily \label{main_8c_a4c88fcc5053a44ba0ac38f6d2c9fee11} 
+BOB\+\_\+\+Renderer\+\_\+\+Handle r}
+
+\Hypertarget{main_8c_a80de27bd7dc4e2b2ad3d5895b97a70f0}\index{main.c@{main.c}!window@{window}}
+\index{window@{window}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{window}{window}}
+{\footnotesize\ttfamily \label{main_8c_a80de27bd7dc4e2b2ad3d5895b97a70f0} 
+GLFWwindow\texorpdfstring{$\ast$}{*} window}
+

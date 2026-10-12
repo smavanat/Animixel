@@ -1,86 +1,82 @@
 \doxysection{input.\+h}
 \hypertarget{input_8h_source}{}\label{input_8h_source}\index{src/input.h@{src/input.h}}
-
+\doxymbox{\hyperlink{input_8h}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ \_\_INPUT\_H\_\_}}
-\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ \_\_INPUT\_H\_\_}}
-\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <GLFW/glfw3.h>}}
-\DoxyCodeLine{00004\ }
-\DoxyCodeLine{00005\ \textcolor{comment}{//Enum\ to\ hold\ the\ state\ of\ the\ keys}}
-\DoxyCodeLine{00006\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
-\DoxyCodeLine{00007\ \ \ \ \ KEY\_JUST\_PRESSED,\ \textcolor{comment}{//Was\ pressed\ this\ frame}}
-\DoxyCodeLine{00008\ \ \ \ \ KEY\_PRESSED,\ \textcolor{comment}{//Held\ on\ from\ the\ previous\ frame}}
-\DoxyCodeLine{00009\ \ \ \ \ KEY\_RELEASED,\ \textcolor{comment}{//Not\ pressed}}
-\DoxyCodeLine{00010\ \ \ \ \ KEY\_JUST\_RELEASED\ \textcolor{comment}{//Released\ the\ previous\ frame}}
-\DoxyCodeLine{00011\ \}\ keystate;}
-\DoxyCodeLine{00012\ }
-\DoxyCodeLine{00013\ \textcolor{comment}{//Holds\ all\ of\ the\ keys\ we\ currently\ want\ to\ work\ with}}
-\DoxyCodeLine{00014\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
-\DoxyCodeLine{00015\ \ \ \ \ KEY\_0,}
-\DoxyCodeLine{00016\ \ \ \ \ KEY\_1,}
-\DoxyCodeLine{00017\ \ \ \ \ KEY\_2,}
-\DoxyCodeLine{00018\ \ \ \ \ KEY\_3,}
-\DoxyCodeLine{00019\ \ \ \ \ KEY\_4,}
-\DoxyCodeLine{00020\ \ \ \ \ KEY\_5,}
-\DoxyCodeLine{00021\ \ \ \ \ KEY\_6,}
-\DoxyCodeLine{00022\ \ \ \ \ KEY\_7,}
-\DoxyCodeLine{00023\ \ \ \ \ KEY\_8,}
-\DoxyCodeLine{00024\ \ \ \ \ KEY\_9,}
-\DoxyCodeLine{00025\ \ \ \ \ KEY\_A,}
-\DoxyCodeLine{00026\ \ \ \ \ KEY\_B,}
-\DoxyCodeLine{00027\ \ \ \ \ KEY\_C,}
-\DoxyCodeLine{00028\ \ \ \ \ KEY\_D,}
-\DoxyCodeLine{00029\ \ \ \ \ KEY\_E,}
-\DoxyCodeLine{00030\ \ \ \ \ KEY\_F,}
-\DoxyCodeLine{00031\ \ \ \ \ KEY\_G,}
-\DoxyCodeLine{00032\ \ \ \ \ KEY\_H,}
-\DoxyCodeLine{00033\ \ \ \ \ KEY\_I,}
-\DoxyCodeLine{00034\ \ \ \ \ KEY\_J,}
-\DoxyCodeLine{00035\ \ \ \ \ KEY\_K,}
-\DoxyCodeLine{00036\ \ \ \ \ KEY\_L,}
-\DoxyCodeLine{00037\ \ \ \ \ KEY\_M,}
-\DoxyCodeLine{00038\ \ \ \ \ KEY\_N,}
-\DoxyCodeLine{00039\ \ \ \ \ KEY\_O,}
-\DoxyCodeLine{00040\ \ \ \ \ KEY\_P,}
-\DoxyCodeLine{00041\ \ \ \ \ KEY\_Q,}
-\DoxyCodeLine{00042\ \ \ \ \ KEY\_R,}
-\DoxyCodeLine{00043\ \ \ \ \ KEY\_S,}
-\DoxyCodeLine{00044\ \ \ \ \ KEY\_T,}
-\DoxyCodeLine{00045\ \ \ \ \ KEY\_U,}
-\DoxyCodeLine{00046\ \ \ \ \ KEY\_V,}
-\DoxyCodeLine{00047\ \ \ \ \ KEY\_W,}
-\DoxyCodeLine{00048\ \ \ \ \ KEY\_X,}
-\DoxyCodeLine{00049\ \ \ \ \ KEY\_Y,}
-\DoxyCodeLine{00050\ \ \ \ \ KEY\_Z,}
-\DoxyCodeLine{00051\ \ \ \ \ KEY\_MINUS,}
-\DoxyCodeLine{00052\ \ \ \ \ KEY\_PLUS,}
-\DoxyCodeLine{00053\ \ \ \ \ MOUSE\_BUTTON\_LEFT,}
-\DoxyCodeLine{00054\ \ \ \ \ MOUSE\_BUTTON\_RIGHT,}
-\DoxyCodeLine{00055\ \ \ \ \ MOUSE\_BUTTON\_MIDDLE,}
-\DoxyCodeLine{00056\ \ \ \ \ NUM\_KEYS}
-\DoxyCodeLine{00057\ \}\ keys;}
-\DoxyCodeLine{00058\ }
-\DoxyCodeLine{00059\ \textcolor{comment}{//Actual\ input\ handling\ interface}}
-\DoxyCodeLine{00060\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
-\DoxyCodeLine{00061\ \ \ \ \ keystate\ key\_status[NUM\_KEYS];}
-\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{double}\ mouseX;}
-\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{double}\ mouseY;}
-\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{double}\ prevX;}
-\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{double}\ prevY;}
-\DoxyCodeLine{00066\ \}\ \doxymbox{\hyperlink{structInput__Handler}{Input\_Handler}};}
-\DoxyCodeLine{00067\ }
-\DoxyCodeLine{00068\ \textcolor{keyword}{extern}\ \doxymbox{\hyperlink{structInput__Handler}{Input\_Handler}}\ handler;\ \textcolor{comment}{//Global\ for\ use\ in\ the\ callback\ functions}}
-\DoxyCodeLine{00069\ }
-\DoxyCodeLine{00070\ \textcolor{comment}{/*}}
-\DoxyCodeLine{00071\ \textcolor{comment}{\ *\ Initialises\ an\ input\ handler\ struct,\ setting\ the\ initial\ cursor\ position\ to\ 0\ and\ all\ of\ the\ keys\ to\ be\ 'released'}}
-\DoxyCodeLine{00072\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{00073\ \textcolor{keywordtype}{void}\ input\_handler\_init(\doxymbox{\hyperlink{structInput__Handler}{Input\_Handler}}\ *ih);}
-\DoxyCodeLine{00085\ \textcolor{keywordtype}{void}\ glfw\_mouse\_callback(GLFWwindow\ *window,\ \textcolor{keywordtype}{int}\ key,\ \textcolor{keywordtype}{int}\ action,\ \textcolor{keywordtype}{int}\ mods);}
-\DoxyCodeLine{00098\ \textcolor{keywordtype}{void}\ glfw\_key\_callback(GLFWwindow\ *window,\ \textcolor{keywordtype}{int}\ key,\ \textcolor{keywordtype}{int}\ scancode,\ \textcolor{keywordtype}{int}\ action,\ \textcolor{keywordtype}{int}\ mods);}
-\DoxyCodeLine{00102\ \textcolor{keywordtype}{void}\ update\_key\_state(\doxymbox{\hyperlink{structInput__Handler}{Input\_Handler}}\ *ih);}
-\DoxyCodeLine{00106\ \textcolor{keywordtype}{void}\ glfw\_cursor\_pos\_callback(GLFWwindow\ *window,\ \textcolor{keywordtype}{double}\ xpos,\ \textcolor{keywordtype}{double}\ ypos);}
-\DoxyCodeLine{00110\ \textcolor{keywordtype}{int}\ cursor\_in\_bounds(\doxymbox{\hyperlink{structInput__Handler}{Input\_Handler}}\ *ih);}
-\DoxyCodeLine{00111\ }
-\DoxyCodeLine{00112\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#ifndef\ \_\_INPUT\_H\_\_}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#define\ \_\_INPUT\_H\_\_}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <GLFW/glfw3.h>}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
+\DoxyCodeLine{00012\ \ \ \ \ \doxymbox{\hyperlink{input_8h_a66e1ae93d741b2c43f46f1dbec9b65d1a626239be90cc3398367d15195a880a94}{KEY\_JUST\_PRESSED}},\ }
+\DoxyCodeLine{00013\ \ \ \ \ \doxymbox{\hyperlink{input_8h_a66e1ae93d741b2c43f46f1dbec9b65d1ac2439afec39a5b43a1fd36a4316379a7}{KEY\_PRESSED}},\ }
+\DoxyCodeLine{00014\ \ \ \ \ \doxymbox{\hyperlink{input_8h_a66e1ae93d741b2c43f46f1dbec9b65d1a207f5f32e6d172c4003ec10fab0cb06d}{KEY\_RELEASED}},\ }
+\DoxyCodeLine{00015\ \ \ \ \ \doxymbox{\hyperlink{input_8h_a66e1ae93d741b2c43f46f1dbec9b65d1aa6317b974a4e8c71af189a7edc8df4fc}{KEY\_JUST\_RELEASED}}\ }
+\DoxyCodeLine{00016\ \}\ \doxymbox{\hyperlink{input_8h_a66e1ae93d741b2c43f46f1dbec9b65d1}{keystate}};}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ KEY\_0,}
+\DoxyCodeLine{00021\ \ \ \ \ KEY\_1,}
+\DoxyCodeLine{00022\ \ \ \ \ KEY\_2,}
+\DoxyCodeLine{00023\ \ \ \ \ KEY\_3,}
+\DoxyCodeLine{00024\ \ \ \ \ KEY\_4,}
+\DoxyCodeLine{00025\ \ \ \ \ KEY\_5,}
+\DoxyCodeLine{00026\ \ \ \ \ KEY\_6,}
+\DoxyCodeLine{00027\ \ \ \ \ KEY\_7,}
+\DoxyCodeLine{00028\ \ \ \ \ KEY\_8,}
+\DoxyCodeLine{00029\ \ \ \ \ KEY\_9,}
+\DoxyCodeLine{00030\ \ \ \ \ KEY\_A,}
+\DoxyCodeLine{00031\ \ \ \ \ KEY\_B,}
+\DoxyCodeLine{00032\ \ \ \ \ KEY\_C,}
+\DoxyCodeLine{00033\ \ \ \ \ KEY\_D,}
+\DoxyCodeLine{00034\ \ \ \ \ KEY\_E,}
+\DoxyCodeLine{00035\ \ \ \ \ KEY\_F,}
+\DoxyCodeLine{00036\ \ \ \ \ KEY\_G,}
+\DoxyCodeLine{00037\ \ \ \ \ KEY\_H,}
+\DoxyCodeLine{00038\ \ \ \ \ KEY\_I,}
+\DoxyCodeLine{00039\ \ \ \ \ KEY\_J,}
+\DoxyCodeLine{00040\ \ \ \ \ KEY\_K,}
+\DoxyCodeLine{00041\ \ \ \ \ KEY\_L,}
+\DoxyCodeLine{00042\ \ \ \ \ KEY\_M,}
+\DoxyCodeLine{00043\ \ \ \ \ KEY\_N,}
+\DoxyCodeLine{00044\ \ \ \ \ KEY\_O,}
+\DoxyCodeLine{00045\ \ \ \ \ KEY\_P,}
+\DoxyCodeLine{00046\ \ \ \ \ KEY\_Q,}
+\DoxyCodeLine{00047\ \ \ \ \ KEY\_R,}
+\DoxyCodeLine{00048\ \ \ \ \ KEY\_S,}
+\DoxyCodeLine{00049\ \ \ \ \ KEY\_T,}
+\DoxyCodeLine{00050\ \ \ \ \ KEY\_U,}
+\DoxyCodeLine{00051\ \ \ \ \ KEY\_V,}
+\DoxyCodeLine{00052\ \ \ \ \ KEY\_W,}
+\DoxyCodeLine{00053\ \ \ \ \ KEY\_X,}
+\DoxyCodeLine{00054\ \ \ \ \ KEY\_Y,}
+\DoxyCodeLine{00055\ \ \ \ \ KEY\_Z,}
+\DoxyCodeLine{00056\ \ \ \ \ KEY\_MINUS,}
+\DoxyCodeLine{00057\ \ \ \ \ KEY\_PLUS,}
+\DoxyCodeLine{00058\ \ \ \ \ MOUSE\_BUTTON\_LEFT,}
+\DoxyCodeLine{00059\ \ \ \ \ MOUSE\_BUTTON\_RIGHT,}
+\DoxyCodeLine{00060\ \ \ \ \ MOUSE\_BUTTON\_MIDDLE,}
+\DoxyCodeLine{00061\ \ \ \ \ NUM\_KEYS}
+\DoxyCodeLine{00062\ \}\ \doxymbox{\hyperlink{input_8h_a3121b5e20cccb8e49edcbd3e9ac77712}{keys}};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00066\ \ \ \ \ \doxymbox{\hyperlink{input_8h_a66e1ae93d741b2c43f46f1dbec9b65d1}{keystate}}\ \doxymbox{\hyperlink{structInput__Handler_a741951a0883e09822c87b4d289817a79}{key\_status}}[NUM\_KEYS];\ \ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{structInput__Handler_a93232f45bae2f4e2dcedea14bff3579b}{mouse\_x}};\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{structInput__Handler_a8bc67487d4295ff82e1d59c5c3f21569}{mouse\_y}};\ }
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{structInput__Handler_afd269043b768c9f93007802113ec888d}{prev\_x}};\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{structInput__Handler_a3ffc86f28c722fa4f828fb8eb716834b}{prev\_y}};\ }
+\DoxyCodeLine{00071\ \}\ \doxymbox{\hyperlink{structInput__Handler}{Input\_Handler}};}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \textcolor{keyword}{extern}\ \doxymbox{\hyperlink{structInput__Handler}{Input\_Handler}}\ \doxymbox{\hyperlink{input_8h_a9f6055c4aa218163420358cb0dbdd569}{handler}};\ }
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00081\ \textcolor{keywordtype}{void}\ input\_handler\_init(\doxymbox{\hyperlink{structInput__Handler}{Input\_Handler}}\ *ih);}
+\DoxyCodeLine{00097\ \textcolor{keywordtype}{void}\ glfw\_mouse\_callback(GLFWwindow\ *window,\ \textcolor{keywordtype}{int}\ key,\ \textcolor{keywordtype}{int}\ action,\ \textcolor{keywordtype}{int}\ mods);}
+\DoxyCodeLine{00115\ \textcolor{keywordtype}{void}\ glfw\_key\_callback(GLFWwindow\ *window,\ \textcolor{keywordtype}{int}\ key,\ \textcolor{keywordtype}{int}\ scancode,\ \textcolor{keywordtype}{int}\ action,\ \textcolor{keywordtype}{int}\ mods);}
+\DoxyCodeLine{00119\ \textcolor{keywordtype}{void}\ glfw\_cursor\_pos\_callback(GLFWwindow\ *window,\ \textcolor{keywordtype}{double}\ xpos,\ \textcolor{keywordtype}{double}\ ypos);}
+\DoxyCodeLine{00124\ \textcolor{keywordtype}{void}\ update\_key\_state(\doxymbox{\hyperlink{structInput__Handler}{Input\_Handler}}\ *ih);}
+\DoxyCodeLine{00134\ \textcolor{keywordtype}{int}\ cursor\_in\_bounds(\doxymbox{\hyperlink{structInput__Handler}{Input\_Handler}}\ *ih,\ \textcolor{keywordtype}{float}\ min\_x,\ \textcolor{keywordtype}{float}\ min\_y,\ \textcolor{keywordtype}{float}\ max\_x,\ \textcolor{keywordtype}{float}\ max\_y);}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \textcolor{preprocessor}{\#endif}}
 
 \end{DoxyCode}
