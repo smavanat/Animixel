@@ -44,10 +44,6 @@ void canvas_set_pixel(Canvas *c, int32_t x, int32_t y, uint32_t colour) {
     c->pixels[(c->width * y) + x] = colour;
 }
 
-void canvas_clear_pixel(Canvas *c, int32_t x, int32_t y) {
-    canvas_set_pixel(c, x, y, 0); // Set it to be colourless and transparent so it shows the background behind it
-}
-
 void canvas_bresenham(Canvas *c, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t colour) {
     // Clamp the values in range to avoid extraneous calculations
     x1 = clampi(x1, 0, c->width - 1);

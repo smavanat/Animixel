@@ -28,6 +28,7 @@
 GLFWwindow *window;
 BOB_Renderer_Handle r;
 Input_Handler handler;
+Button_State_Manager bs_manager;
 Canvas c;
 uint32_t screen_width = 800, screen_height = 600;
 uint32_t last_fb_w = 800, last_fb_h = 600;
@@ -301,7 +302,14 @@ int init(GLFWwindow **window) {
 
 void process_input(GLFWwindow *window) {
     if(glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
-        if(handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED || handler.key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED) {
+        if(handler.key_status[KEY_D] == KEY_JUST_PRESSED)
+            bs_manager.selected_toolbar_button = (bs_manager.selected_toolbar_button == BUTTON_DRAW) ? BUTTON_NONE : BUTTON_DRAW;
+        if(handler.key_status[KEY_E] == KEY_JUST_PRESSED)
+            bs_manager.selected_toolbar_button = (bs_manager.selected_toolbar_button == BUTTON_ERASE) ? BUTTON_NONE : BUTTON_ERASE;
+        if(handler.key_status[KEY_S] == KEY_JUST_PRESSED)
+            bs_manager.selected_toolbar_button = (bs_manager.selected_toolbar_button == BUTTON_SHAPE) ? BUTTON_NONE : BUTTON_SHAPE;
+        if((bs_manager.selected_toolbar_button == BUTTON_DRAW || bs_manager.selected_toolbar_button == BUTTON_ERASE) &&
+            (handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED || handler.key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED)) {
             int32_t ex = (int32_t)(handler.mouse_x / c.scale) - (int32_t)c.origin_x;
             int32_t ey = (int32_t)(handler.mouse_y / c.scale) - (int32_t)c.origin_y;
             int32_t sx = (int32_t)(handler.prev_x / c.scale) - (int32_t)c.origin_x;
@@ -309,11 +317,12 @@ void process_input(GLFWwindow *window) {
 
             // Check to make sure the mouse is actually in the canvas before drawing anything
             if((ex >= 0 && ex < c.width && ey >= 0 && ey < c.height)) {
-                canvas_set_pixel(&c, ex, ey, UINT32_MAX);
+                uint32_t colour = (bs_manager.selected_toolbar_button == BUTTON_DRAW) ? UINT32_MAX : 0;
+                canvas_set_pixel(&c, ex, ey, colour);
 
                 // Only use bresenham if the press was continuing from the previous frame
                 if(handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED) {
-                    canvas_bresenham(&c, sx, sy, ex, ey, UINT32_MAX);
+                    canvas_bresenham(&c, sx, sy, ex, ey, colour);
                 }
             }
         }
@@ -347,22 +356,31 @@ uint32_t load_tex(char *path, BOB_Font_Handle font) {
     return 1;
 }
 
+// TODO: SCREEN TEARING STILL HAPPENS AT TOP. NEED TO FIX
 int main(void) {
     if(init(&window)) {
         printf("Initialised\n");
-        canvas_init(&c, 100, 100, 4, 0, r);
+
+        // Initialsing the font used for text rendering
         int8_t res = BOB_load_bmf_font(r, "../data/test.fnt", BOB_BMF_TEXT, &bitmap);
         if(res <= 0) BOB_print_parsing_error();
         load_tex("../data/test.png", bitmap);
 
+        // Initialising clay
         clay_init(screen_width, screen_height);
+        button_state_manager_init(&bs_manager);
+        // Setting up a custom data element to use to hold the canvas once so
+        // don't recreate it every frame
+        canvas_init(&c, 100, 100, 4, 0, r);
         Custom_Element_Data canvas_data = {.type = CUSTOM_ELEMENT_TYPE_CANVAS, .canvas = &c};
 
+        // Timing between frames
         struct timeval stop, start; //Store the start and end times of a frame
         float dt = 0.0f; //Holds the time passed between frames
 
-        // TODO: SCREEN TEARING STILL HAPPENS AT TOP. NEED TO FIX
+        // Main loop
         while(!glfwWindowShouldClose(window)) {
+            gettimeofday(&start, NULL); //Getting time at start of frame
             glfwPollEvents();
 
             // Force window to resize if dimensions do not match to avoid screen tearing
@@ -377,20 +395,23 @@ int main(void) {
                 last_fb_w = fb_w;      last_fb_h = fb_h;
             }
 
+            // Process input events and update key state
             process_input(window);
             update_key_state(&handler);
-
-            gettimeofday(&start, NULL); //Getting time at start of frame
 
             //Clear the screen
             clay_update_dimensions(&handler, dt, screen_width, screen_height);
             Clay_RenderCommandArray render_commands = editor_layout(dt, &canvas_data);
 
+            // Render code
             BOB_renderer_begin(r, (float[4]){1.0f, 0.0f, 1.0f, 1.0f});
                 clay_render(r, render_commands);
             BOB_renderer_end(r);
 
+            // Swap front and back buffers
             glfwSwapBuffers(window);
+
+            // Compute time left at end of frame
             gettimeofday(&stop, NULL); //Get the time at the end of the frame
             dt = (stop.tv_sec - start.tv_sec) * 1000 + (stop.tv_usec - start.tv_usec) / 1000.0f; //Get the frame length
             // If the frame took less time than the set frame rate, wait until the time is the frame rate

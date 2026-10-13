@@ -3,6 +3,7 @@
 #include "math_utils.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 // TODO:
 // Palette for now: https://lospec.com/palette-list/escorpion
@@ -14,14 +15,30 @@ const Clay_Color COLOUR_LIGHT = (Clay_Color){224, 215, 210, 255};
 const Clay_Color COLOUR_RED = (Clay_Color){168, 66, 28, 255};
 const Clay_Color COLOUR_ORANGE = (Clay_Color){255, 138, 50, 255};
 
+//===..................................... UI STATE MANAGEMENT .......................................===
+void button_state_manager_init(Button_State_Manager *bs) {
+    // memset(bs->buttons, 0, sizeof(bs->buttons));
+    bs->selected_toolbar_button = BUTTON_NONE;
+    bs->selected_menu_button = BUTTON_NONE;
+}
+
+void set_toolbar_button_pressed_cb(Clay_ElementId id, Clay_PointerData info, void *userData) {
+    if(info.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME) {
+        Button_Type t = (intptr_t)userData;
+        // Double clicking on a button should turn it off
+        bs_manager.selected_toolbar_button = (t == bs_manager.selected_toolbar_button) ? BUTTON_NONE : t;
+    }
+}
+
 //===..................................... CLAY WIDGET FUNCTIONS .......................................===
 
-void create_static_button(uint32_t id, uint32_t width, uint32_t height, uint8_t padding, Clay_Color hover_colour,
+void create_static_button(Button_Type type, uint32_t width, uint32_t height, uint8_t padding, Clay_Color hover_colour,
                           Clay_Color basic_colour, Clay_String text, void (*button_handler)(Clay_ElementId id,
                           Clay_PointerData info, void *userData), void *userData) {
-    CLAY(CLAY_IDI("Button", id), {.layout = {.sizing = {CLAY_SIZING_FIXED(width), CLAY_SIZING_FIXED(height)},
+    CLAY(CLAY_IDI("Button", type), {.layout = {.sizing = {CLAY_SIZING_FIXED(width), CLAY_SIZING_FIXED(height)},
          .padding = CLAY_PADDING_ALL(padding), .childAlignment = {CLAY_ALIGN_X_CENTER, CLAY_ALIGN_Y_CENTER} },
-         .backgroundColor = Clay_Hovered() ? hover_colour : basic_colour}) {
+         .backgroundColor = Clay_Hovered() ? hover_colour : basic_colour, .border = (bs_manager.selected_toolbar_button == type)
+         ? (Clay_BorderElementConfig){COLOUR_BLACK, 2} : (Clay_BorderElementConfig){}}) {
         Clay_OnHover(button_handler, userData);
 
         CLAY_TEXT(text, {.textColor = COLOUR_BLACK, .textAlignment = CLAY_TEXT_ALIGN_CENTER});
@@ -64,7 +81,6 @@ void clay_update_dimensions(Input_Handler *ih, float dt, size_t width, size_t he
 }
 
 void clay_render(BOB_Renderer_Handle r, Clay_RenderCommandArray renderCommands) {
-    //TODO: Implement renderer that handles all of these rendering commands.
     for(int i = 0; i < renderCommands.length; i++) {
         Clay_RenderCommand *renderCommand = &renderCommands.internalArray[i];
 
@@ -89,19 +105,9 @@ void clay_render(BOB_Renderer_Handle r, Clay_RenderCommandArray renderCommands) 
             break;
             // The renderer should draw a colored border inset into the bounding box.
             case CLAY_RENDER_COMMAND_TYPE_BORDER:
-                BOB_draw_quad(r, (BOB_Quad){
-                    renderCommand->boundingBox.x,
-                    renderCommand->boundingBox.y,
-                    renderCommand->boundingBox.width,
-                    renderCommand->boundingBox.height,
-                }, (BOB_Vector4){
-                    renderCommand->renderData.rectangle.backgroundColor.r/255.0f,
-                    renderCommand->renderData.rectangle.backgroundColor.g/255.0f,
-                    renderCommand->renderData.rectangle.backgroundColor.b/255.0f,
-                    renderCommand->renderData.rectangle.backgroundColor.a/255.0f,
-                }, 10.0f, 0.0f);
+                // For some reason have to set the thickness to be the left border side thickness otherwise it doesn't work???
                 BOB_draw_line(r, (BOB_Vector2){renderCommand->boundingBox.x, renderCommand->boundingBox.y}, (BOB_Vector2){renderCommand->boundingBox.x +
-                    renderCommand->boundingBox.width, renderCommand->boundingBox.y}, renderCommand->renderData.border.width.top,
+                    renderCommand->boundingBox.width, renderCommand->boundingBox.y}, renderCommand->renderData.border.width.left,
                     (BOB_Vector4){
                         renderCommand->renderData.border.color.r/255.0f,
                         renderCommand->renderData.border.color.b/255.0f,
@@ -118,7 +124,7 @@ void clay_render(BOB_Renderer_Handle r, Clay_RenderCommandArray renderCommands) 
                     }, 11.0f);
                 BOB_draw_line(r, (BOB_Vector2){renderCommand->boundingBox.x + renderCommand->boundingBox.width, renderCommand->boundingBox.y},
                     (BOB_Vector2){renderCommand->boundingBox.x + renderCommand->boundingBox.width, renderCommand->boundingBox.y + renderCommand->boundingBox.height},
-                    renderCommand->renderData.border.width.right, (BOB_Vector4){
+                    renderCommand->renderData.border.width.left, (BOB_Vector4){
                         renderCommand->renderData.border.color.r/255.0f,
                         renderCommand->renderData.border.color.b/255.0f,
                         renderCommand->renderData.border.color.g/255.0f,
@@ -126,7 +132,7 @@ void clay_render(BOB_Renderer_Handle r, Clay_RenderCommandArray renderCommands) 
                     }, 11.0f);
                 BOB_draw_line(r, (BOB_Vector2){renderCommand->boundingBox.x, renderCommand->boundingBox.y + renderCommand->boundingBox.height},
                     (BOB_Vector2){renderCommand->boundingBox.x + renderCommand->boundingBox.width, renderCommand->boundingBox.y + renderCommand->boundingBox.height},
-                    renderCommand->renderData.border.width.bottom, (BOB_Vector4){
+                    renderCommand->renderData.border.width.left, (BOB_Vector4){
                         renderCommand->renderData.border.color.r/255.0f,
                         renderCommand->renderData.border.color.b/255.0f,
                         renderCommand->renderData.border.color.g/255.0f,
@@ -176,6 +182,7 @@ void clay_render(BOB_Renderer_Handle r, Clay_RenderCommandArray renderCommands) 
                         custom_elem->canvas->origin_x = clampi(((int32_t)renderCommand->boundingBox.x / custom_elem->canvas->scale) - (custom_elem->canvas->width / 2), 0, INT32_MAX);
                         custom_elem->canvas->origin_y = clampi(((int32_t)renderCommand->boundingBox.y / custom_elem->canvas->scale) - (custom_elem->canvas->height / 2), 0, INT32_MAX);
                         canvas_draw(custom_elem->canvas, r);
+                        // Draw a quad around the canvas to show it's border
                         BOB_draw_unfilled_quad(r, (BOB_Quad){(custom_elem->canvas->origin_x * custom_elem->canvas->scale) - 3,
                                                              (custom_elem->canvas->origin_y * custom_elem->canvas->scale) - 3,
                                                              (custom_elem->canvas->width * custom_elem->canvas->scale) + 7,
@@ -200,7 +207,7 @@ Clay_RenderCommandArray editor_layout(float dt, Custom_Element_Data *canvas) {
     CLAY(CLAY_ID("OuterContainer"), {.layout = {.layoutDirection = CLAY_TOP_TO_BOTTOM, .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)}}}) {
         CLAY(CLAY_ID("MenuBar"), {.layout = {.layoutDirection = CLAY_LEFT_TO_RIGHT, .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(44)},
             .padding = CLAY_PADDING_ALL(4), .childAlignment = {.y = CLAY_ALIGN_Y_CENTER}}, .backgroundColor = COLOUR_RED}) {
-            create_static_button(0, 120, 36, 8, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("File"), NULL, NULL);
+            create_static_button(BUTTON_FILE, 120, 36, 8, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("File"), NULL, NULL);
         }
         CLAY(CLAY_ID("Editor"), {.layout = {.layoutDirection = CLAY_LEFT_TO_RIGHT, .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)}}}) {
             CLAY(CLAY_ID("CanvasContainer"), {.layout = {.sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)},
@@ -209,9 +216,9 @@ Clay_RenderCommandArray editor_layout(float dt, Custom_Element_Data *canvas) {
             }
             CLAY(CLAY_ID("Buttons"), {.layout = {.layoutDirection = CLAY_TOP_TO_BOTTOM, .sizing = {CLAY_SIZING_GROW(0, 44), CLAY_SIZING_GROW(0)},
                 .childGap = 8, .padding = CLAY_PADDING_ALL(4), .childAlignment = {CLAY_ALIGN_X_RIGHT, CLAY_ALIGN_Y_CENTER}}, .backgroundColor = COLOUR_RED}) {
-                create_static_button(1, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("D"), NULL, NULL);
-                create_static_button(2, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("E"), NULL, NULL);
-                create_static_button(3, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("S"), NULL, NULL);
+                create_static_button(BUTTON_DRAW, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("D"), set_toolbar_button_pressed_cb, (void *)BUTTON_DRAW);
+                create_static_button(BUTTON_ERASE, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("E"), set_toolbar_button_pressed_cb, (void *)BUTTON_ERASE);
+                create_static_button(BUTTON_SHAPE, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("S"), set_toolbar_button_pressed_cb, (void *)BUTTON_SHAPE);
             }
         }
     }

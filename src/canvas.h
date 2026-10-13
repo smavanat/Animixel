@@ -55,13 +55,6 @@ void canvas_draw(Canvas *c, BOB_Renderer_Handle renderer);
  */
 void canvas_set_pixel(Canvas *c, int32_t x, int32_t y, uint32_t colour);
 /**
- * Erases a pixel in the Canvas by setting its RGBA colour to (0, 0, 0, 0)
- * @param c a pointer to the Canvas where the pixel should be erased
- * @param x the x coordinate of the pixel
- * @param y the y coordinate of the pixel
- */
-void canvas_clear_pixel(Canvas *c, int32_t x, int32_t y);
-/**
  * Uses Bresenham's line algorithm to draw a line between two points on a Canvas.
  * @param c a pointer to the Canvas where the line should be drawn
  * @param sx the starting x coord of the line

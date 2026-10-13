@@ -35,4 +35,17 @@
  - Turned off vsync in GLFW as it was causing screen tearing and jittering in the top and right when rapidly resizing which was very bad UX.
    Also set the background colour of the renderer to pink so that we could easily see if such a problem occurred again. The problem still occurs
    occasionally but is not a major issue. Could fix easily by just setting background colour to match main colour of app, then would be no issue
-
+ - Started work on adding functionality to buttons.
+        - Created an enum to represent different button types. Also included a BUTTON_NONE type to represent no button selected
+        - Created a button state manager that held the currently selected menu + toolbar button. Can only hold one at a time to make
+          them mutually exclusive
+        - Added hotkeys to switch between draw/erase/shape buttons. When pressed when the button is the currently selected toolbar button
+          in the button state manager, sets the currently selected one to BUTTON_NONE
+        - Added a callback function to the Clay UI that does the same thing but when clicked. Uses the trick of casting an int to a pointer
+          and passing that as the userData argument to avoid creating a new var for no reason
+        - Made draw/erasure functionality depend on whether the draw/erase button was selected. Got rid of the canvas_erase function and
+          just made calls to canvas_draw and canvas_bresenham with 0 as the colour since that did the exact same thing
+        - Made the button template show a border around the button if it was the currently selected on to improve UX. Had to fix renderer
+          since it drew a quad for the border for some reason, and also only the left side of the border.width struct acutally had any thickness?????
+          Strange bug
+ 

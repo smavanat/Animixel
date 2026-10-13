@@ -10,6 +10,9 @@
 #include "canvas.h"
 #include "input.h"
 
+/// Global currently used to store the bitmap font used for text rendering
+extern BOB_Font_Handle bitmap; //TODO: Replace this with something else so we can use different font sizes for different widgets
+
 /// Enum used to tag different Clay Custom element types
 typedef enum {
     CUSTOM_ELEMENT_TYPE_CANVAS,
@@ -25,24 +28,36 @@ typedef struct {
     };
 } Custom_Element_Data;
 
+/// Enum to hold the different states a button could be in
 typedef enum {
-    BUTTON_DOWN,
     BUTTON_UP,
+    BUTTON_DOWN,
 } Button_State;
 
+/// Enum to hold the different buttons
 typedef enum {
     BUTTON_DRAW,
     BUTTON_ERASE,
     BUTTON_SHAPE,
     BUTTON_FILE,
+    BUTTON_NONE,
     NUM_BUTTONS
 } Button_Type;
 
+/// Struct to manage the state of all the buttons similar to Input_Handler
 typedef struct {
-    Button_State buttons[NUM_BUTTONS];
+    // Button_State buttons[NUM_BUTTONS];
+    Button_Type selected_toolbar_button;
+    Button_Type selected_menu_button;
 } Button_State_Manager;
 
 extern Button_State_Manager bs_manager; //> Manages UI bs
+
+/**
+ * Initialises a Button_State_Manager by setting each button to have state BUTTON_UP
+ * @param bs a pointer to the Button_State_Manager to initialise
+ */
+void button_state_manager_init(Button_State_Manager *bs);
 
 /**
  * Creates a clay button widget whose size does not change
@@ -59,9 +74,6 @@ extern Button_State_Manager bs_manager; //> Manages UI bs
 void create_static_button(uint32_t id, uint32_t width, uint32_t height, uint8_t padding, Clay_Color hover_colour,
                           Clay_Color basic_colour, Clay_String text, void (*button_handler)(Clay_ElementId id,
                           Clay_PointerData info, void *userData), void *userData);
-
-/// Global currently used to store the bitmap font used for text rendering
-extern BOB_Font_Handle bitmap; //TODO: Replace this with something else so we can use different font sizes for different widgets
 
 /**
  * Initialises Clay
