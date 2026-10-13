@@ -301,14 +301,19 @@ int init(GLFWwindow **window) {
 void process_input(GLFWwindow *window) {
     if(glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
         if(handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED || handler.key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED) {
-            int32_t ex = clampi((int32_t)(handler.mouse_x / c.scale) - (int32_t)c.origin_x, 0, (int32_t)c.width);
-            int32_t ey = clampi((int32_t)(handler.mouse_y / c.scale) - (int32_t)c.origin_y, 0, (int32_t)c.height);
-            int32_t sx = clampi((int32_t)(handler.prev_x / c.scale) - (int32_t)c.origin_x, 0, (int32_t)c.width);
-            int32_t sy = clampi((int32_t)(handler.prev_y / c.scale) - (int32_t)c.origin_y, 0, (int32_t)c.height);
-            canvas_set_pixel(&c, ex, ey, 0);
+            int32_t ex = (int32_t)(handler.mouse_x / c.scale) - (int32_t)c.origin_x;
+            int32_t ey = (int32_t)(handler.mouse_y / c.scale) - (int32_t)c.origin_y;
+            int32_t sx = (int32_t)(handler.prev_x / c.scale) - (int32_t)c.origin_x;
+            int32_t sy = (int32_t)(handler.prev_y / c.scale) - (int32_t)c.origin_y;
 
-            if(handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED) {
-                canvas_bresenham(&c, sx, sy, ex, ey, 0);
+            // Check to make sure the mouse is actually in the canvas before drawing anything
+            if((ex >= 0 && ex < c.width && ey >= 0 && ey < c.height)) {
+                canvas_set_pixel(&c, ex, ey, UINT32_MAX);
+
+                // Only use bresenham if the press was continuing from the previous frame
+                if(handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED) {
+                    canvas_bresenham(&c, sx, sy, ex, ey, UINT32_MAX);
+                }
             }
         }
         // Need to set prev_x here so that it is based on the mouse position last frame not last event
@@ -344,7 +349,7 @@ uint32_t load_tex(char *path, BOB_Font_Handle font) {
 int main(void) {
     if(init(&window)) {
         printf("Initialised\n");
-        canvas_init(&c, 100, 100, 4, UINT32_MAX, r);
+        canvas_init(&c, 100, 100, 4, 0, r);
         int8_t res = BOB_load_bmf_font(r, "../data/test.fnt", BOB_BMF_TEXT, &bitmap);
         if(res <= 0) BOB_print_parsing_error();
         load_tex("../data/test.png", bitmap);

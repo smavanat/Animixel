@@ -1,4 +1,5 @@
 #include "canvas.h"
+#include "math_utils.h"
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
@@ -48,6 +49,12 @@ void canvas_clear_pixel(Canvas *c, int32_t x, int32_t y) {
 }
 
 void canvas_bresenham(Canvas *c, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t colour) {
+    // Clamp the values in range to avoid extraneous calculations
+    x1 = clampi(x1, 0, c->width - 1);
+    x2 = clampi(x2, 0, c->width - 1);
+    y1 = clampi(y1, 0, c->height - 1);
+    y2 = clampi(y2, 0, c->height - 1);
+
     int32_t dx = abs(x2 - x1);      // Difference in x values
     int32_t sx = x1 < x2 ? 1 : -1;  // Sign change (which direction is the x value of the line moving in)
     int32_t dy = -abs(y2 - y1);     // Difference in y values. Set as negative so the loop is symmetric

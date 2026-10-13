@@ -1,5 +1,6 @@
 #include "ui_core.h"
 #include "canvas.h"
+#include "math_utils.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -23,7 +24,7 @@ void create_static_button(uint32_t id, uint32_t width, uint32_t height, uint8_t 
          .backgroundColor = Clay_Hovered() ? hover_colour : basic_colour}) {
         Clay_OnHover(button_handler, userData);
 
-        CLAY_TEXT(text, {.textColor = COLOUR_WHITE, .textAlignment = CLAY_TEXT_ALIGN_CENTER});
+        CLAY_TEXT(text, {.textColor = COLOUR_BLACK, .textAlignment = CLAY_TEXT_ALIGN_CENTER});
     }
 }
 
@@ -172,9 +173,14 @@ void clay_render(BOB_Renderer_Handle r, Clay_RenderCommandArray renderCommands) 
                 if(!custom_elem) continue;
                 switch(custom_elem->type){
                     case CUSTOM_ELEMENT_TYPE_CANVAS: {
-                        custom_elem->canvas->origin_x = (uint32_t)renderCommand->boundingBox.x;
-                        custom_elem->canvas->origin_y = (uint32_t)renderCommand->boundingBox.y;
+                        custom_elem->canvas->origin_x = clampi(((int32_t)renderCommand->boundingBox.x / custom_elem->canvas->scale) - (custom_elem->canvas->width / 2), 0, INT32_MAX);
+                        custom_elem->canvas->origin_y = clampi(((int32_t)renderCommand->boundingBox.y / custom_elem->canvas->scale) - (custom_elem->canvas->height / 2), 0, INT32_MAX);
                         canvas_draw(custom_elem->canvas, r);
+                        BOB_draw_unfilled_quad(r, (BOB_Quad){(custom_elem->canvas->origin_x * custom_elem->canvas->scale) - 3,
+                                                             (custom_elem->canvas->origin_y * custom_elem->canvas->scale) - 3,
+                                                             (custom_elem->canvas->width * custom_elem->canvas->scale) + 7,
+                                                             (custom_elem->canvas->width * custom_elem->canvas->scale) + 7},
+                                                             5.0f, (BOB_Vector4){0, 0, 0, 1}, 10, 0.0f);
                     }
                 }
             }
@@ -192,16 +198,17 @@ Clay_RenderCommandArray editor_layout(float dt, Custom_Element_Data *canvas) {
     Clay_BeginLayout();
 
     CLAY(CLAY_ID("OuterContainer"), {.layout = {.layoutDirection = CLAY_TOP_TO_BOTTOM, .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)}}}) {
-        CLAY(CLAY_ID("MenuBar"), {.layout = {.layoutDirection = CLAY_LEFT_TO_RIGHT, .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(40)}}, .backgroundColor = COLOUR_RED}) {
-            // TODO: FIX BUG WHERE THIS STARTS AT (0, 0) AND SO IS CONSIDERED HOVERED SINCE THAT'S WHAT THE CURSOR DEFAULTS TO AS WELL
-            create_static_button(0, 120, 36, 2, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("File"), NULL, NULL);
+        CLAY(CLAY_ID("MenuBar"), {.layout = {.layoutDirection = CLAY_LEFT_TO_RIGHT, .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(44)},
+            .padding = CLAY_PADDING_ALL(4), .childAlignment = {.y = CLAY_ALIGN_Y_CENTER}}, .backgroundColor = COLOUR_RED}) {
+            create_static_button(0, 120, 36, 8, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("File"), NULL, NULL);
         }
         CLAY(CLAY_ID("Editor"), {.layout = {.layoutDirection = CLAY_LEFT_TO_RIGHT, .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)}}}) {
-            CLAY(CLAY_ID("CanvasContainer"), {.layout = {.sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)}}}) {
+            CLAY(CLAY_ID("CanvasContainer"), {.layout = {.sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)},
+                .childAlignment = {CLAY_ALIGN_X_CENTER, CLAY_ALIGN_Y_CENTER}}, .backgroundColor = COLOUR_LIGHT}) {
                 CLAY(CLAY_ID("Canvas"), {.custom = {.customData = canvas}}) {}
             }
-            CLAY(CLAY_ID("Buttons"), {.layout = {.layoutDirection = CLAY_TOP_TO_BOTTOM, .sizing = {CLAY_SIZING_GROW(80), CLAY_SIZING_GROW(0)},
-                .childGap = 16, .childAlignment = {CLAY_ALIGN_X_RIGHT, CLAY_ALIGN_Y_CENTER}}}) {
+            CLAY(CLAY_ID("Buttons"), {.layout = {.layoutDirection = CLAY_TOP_TO_BOTTOM, .sizing = {CLAY_SIZING_GROW(0, 72), CLAY_SIZING_GROW(0)},
+                .childGap = 16, .padding = CLAY_PADDING_ALL(4), .childAlignment = {CLAY_ALIGN_X_RIGHT, CLAY_ALIGN_Y_CENTER}}, .backgroundColor = COLOUR_RED}) {
                 create_static_button(1, 64, 64, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("D"), NULL, NULL);
                 create_static_button(2, 64, 64, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("E"), NULL, NULL);
                 create_static_button(3, 64, 64, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("S"), NULL, NULL);
