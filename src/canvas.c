@@ -37,33 +37,30 @@ void canvas_draw(Canvas *c, BOB_Renderer_Handle renderer) {
                          (BOB_Quad){0, 0, c->width, c->height}, (BOB_Vector4){1,1,1,1}, 20, 0.0f);
 }
 
-void canvas_set_pixel(Canvas *c, uint32_t x, uint32_t y, uint32_t colour) {
-    if(x >= c->width || y >= c->height) return; // Exit if the pixel is out of the grid
+void canvas_set_pixel(Canvas *c, int32_t x, int32_t y, uint32_t colour) {
+    if(x >= c->width || y >= c->height || x < 0 || y < 0) return; // Exit if the pixel is out of the grid
 
     c->pixels[(c->width * y) + x] = colour;
 }
 
-void canvas_clear_pixel(Canvas *c, uint32_t x, uint32_t y) {
+void canvas_clear_pixel(Canvas *c, int32_t x, int32_t y) {
     canvas_set_pixel(c, x, y, 0); // Set it to be colourless and transparent so it shows the background behind it
 }
 
-void canvas_bresenham(Canvas *c, uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, uint32_t colour) {
-    if(x1 >= c->width || y1 >= c->height || x2 >= c->width || y2 >= c->height) return;
-
-    int m_new = 2 * (y2 - y1);
-    int slope_error_new = m_new - (x2 - x1);
-    for (int x = x1, y = y1; x <= x2; x++) {
-        canvas_set_pixel(c, x, y, colour);
-
-        // Add slope to increment angle formed
-        slope_error_new += m_new;
-
-        // Slope error reached limit, time to
-        // increment y and update slope error.
-        if (slope_error_new >= 0) {
-            y++;
-            slope_error_new -= 2 * (x2 - x1);
-        }
+void canvas_bresenham(Canvas *c, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t colour) {
+    int32_t dx = abs(x2 - x1);      // Difference in x values
+    int32_t sx = x1 < x2 ? 1 : -1;  // Sign change (which direction is the x value of the line moving in)
+    int32_t dy = -abs(y2 - y1);     // Difference in y values. Set as negative so the loop is symmetric
+    int32_t sy = y1 < y2 ? 1 : -1;  // Sign change (which direction is the y value of the line moving in)
+    int32_t err = dx + dy;          // Tracks how far the pixel has strayed from the ideal line
+    for (;;) {
+        canvas_set_pixel(c, x1, y1, colour);    // Draw the current pixel
+        if (x1 == x2 && y1 == y2) break;        // Stop if we have reached the endpoint
+        // Multiply error by 2. This is because in the actual algorithm the comparisons between err and dx/dy have dx/dy,
+        // so this keeps everything in integer space
+        int32_t e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x1 += sx; }  // Line has moved far enough horizontally that a x step is due
+        if (e2 <= dx) { err += dx; y1 += sy; }  // Line has moved far enough vertically that a y step is due
     }
 }
 

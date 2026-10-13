@@ -53,17 +53,16 @@ void canvas_draw(Canvas *c, BOB_Renderer_Handle renderer);
  * @param y the y coordinate of the pixel
  * @param colour the new colour the pixel should be set to
  */
-void canvas_set_pixel(Canvas *c, uint32_t x, uint32_t y, uint32_t colour);
+void canvas_set_pixel(Canvas *c, int32_t x, int32_t y, uint32_t colour);
 /**
  * Erases a pixel in the Canvas by setting its RGBA colour to (0, 0, 0, 0)
  * @param c a pointer to the Canvas where the pixel should be erased
  * @param x the x coordinate of the pixel
  * @param y the y coordinate of the pixel
  */
-void canvas_clear_pixel(Canvas *c, uint32_t x, uint32_t y);
+void canvas_clear_pixel(Canvas *c, int32_t x, int32_t y);
 /**
- * Uses Bresenham's line algorithm adapted from here: https://www.geeksforgeeks.org/dsa/bresenhams-line-generation-algorithm/
- * to draw a line between two points on a Canvas
+ * Uses Bresenham's line algorithm to draw a line between two points on a Canvas.
  * @param c a pointer to the Canvas where the line should be drawn
  * @param sx the starting x coord of the line
  * @param sy the starting y coord of the line
@@ -71,7 +70,7 @@ void canvas_clear_pixel(Canvas *c, uint32_t x, uint32_t y);
  * @param ey the ending y coord of the line
  * @param colour the colour the line whould be drawn in
  */
-void canvas_bresenham(Canvas *c, uint32_t sx, uint32_t sy, uint32_t ex, uint32_t ey, uint32_t colour);
+void canvas_bresenham(Canvas *c, int32_t sx, int32_t sy, int32_t ex, int32_t ey, uint32_t colour);
 /**
  * Prints the pixels array of the Canvas to the terminal. Used for debugging and
  * should not be used in production code

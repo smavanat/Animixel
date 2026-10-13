@@ -134,8 +134,8 @@ void glfw_scroll_callback(GLFWwindow *window, double xpos, double ypos) {
  */
 void glfw_cursor_pos_callback(GLFWwindow *window, double xpos, double ypos) {
     if(glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
-        handler.prev_x = handler.mouse_x;
-        handler.prev_y = handler.mouse_y;
+        // handler.prev_x = handler.mouse_x;
+        // handler.prev_y = handler.mouse_y;
         handler.mouse_x = xpos;
         handler.mouse_y = ypos;
     }
@@ -311,6 +311,10 @@ void process_input(GLFWwindow *window) {
                 canvas_bresenham(&c, sx, sy, ex, ey, 0);
             }
         }
+        // Need to set prev_x here so that it is based on the mouse position last frame not last event
+        // (otherwise will get incomplete lines from Bresenham)
+        handler.prev_x = handler.mouse_x;
+        handler.prev_y = handler.mouse_y;
     }
 }
 
