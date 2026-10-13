@@ -5,7 +5,6 @@
 
 #ifndef __INPUT_H__
 #define __INPUT_H__
-#include <GLFW/glfw3.h>
 
 /// Enum to hold the state of the keys
 typedef enum {
@@ -64,13 +63,13 @@ typedef enum {
 /// Struct that acts as input handling interface
 typedef struct {
     keystate key_status[NUM_KEYS];  ///< Map that holds the state of all the current keys we care about
-    double mouse_x; ///< Mouse x position in the current frame
-    double mouse_y; ///< Mouse y position in the current frame
-    double prev_x; ///< Mouse x position in the previous frame
-    double prev_y; ///< Mouse y position in the previous frame
+    double mouse_x;  ///< Mouse x position in the current frame
+    double mouse_y;  ///< Mouse y position in the current frame
+    double prev_x;   ///< Mouse x position in the previous frame
+    double prev_y;   ///< Mouse y position in the previous frame
+    double scroll_x; ///< Mouse horizontal scroll in the current frame
+    double scroll_y; ///< Mouse vertical scroll in the current frame
 } Input_Handler;
-
-extern Input_Handler handler; ///< Global for use in the callback functions
 
 /**
  * Initialises an Input_Handler.
@@ -80,45 +79,7 @@ extern Input_Handler handler; ///< Global for use in the callback functions
  */
 void input_handler_init(Input_Handler *ih);
 /**
- * Callback function to be used by GLFW when a mouse button's state changes.
- * If the new state is GLFW_PRESS and the old state stored in the input_handler was KEY_JUST_RELEASED or KEY_RELEASED,
- * sets the state to KEY_JUST_PRESSED.
- * If the new state is GLFW_PRESS and the old state stored in the input_handler was KEY_PRESSED or KEY_JUST_PRESSED,
- * sets the state to KEY_PRESSED.
- * If the new state is GLFW_RELEASE and the old state stored in the input_handler was KEY_JUST_RELEASED or KEY_RELEASED,
- * sets the state to KEY_RELEASED.
- * If the new state is GLFW_RELEASE and the old state stored in the input_handler was KEY_JUST_PRESSED or KEY_PRESSED,
- * sets the state to KEY_JUST_RELEASED.
- * @param window a pointer to the GLFWwindow where the mouse button change occured
- * @param key the mouse button whose state has changed
- * @param action the new state of the mouse button
- * @param mods modifier bits. Not used by this callback implementation
- */
-void glfw_mouse_callback(GLFWwindow *window, int key, int action, int mods);
-/**
- * Callback function to be used by glfw when a key's state changes.
- * If the new state is GLFW_PRESS and the old state stored in the input_handler was KEY_JUST_RELEASED or KEY_RELEASED,
- * sets the state to KEY_JUST_PRESSED.
- * If the new state is GLFW_PRESS and the old state stored in the input_handler was KEY_PRESSED or KEY_JUST_PRESSED,
- * sets the state to KEY_PRESSED.
- * If the new state is GLFW_RELEASE and the old state stored in the input_handler was KEY_JUST_RELEASED or KEY_RELEASED,
- * sets the state to KEY_RELEASED.
- * If the new state is GLFW_RELEASE and the old state stored in the input_handler was KEY_JUST_PRESSED or KEY_PRESSED,
- * sets the state to KEY_JUST_RELEASED.
- * If the new state is GLFW_REPEAT set the state to KEY_PRESSED.
- * @param window a pointer to the GLFWwindow where the key change occured
- * @param key the key whose state has changed
- * @param scancode the hardware specific scancode of the key. Not used by this callback implementation
- * @param action the new state of the key
- * @param mods modifier bits. Not used by this callback implementation
- */
-void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-/**
- * Callback function to be used by glfw when the cursor position changes
- */
-void glfw_cursor_pos_callback(GLFWwindow *window, double xpos, double ypos);
-/**
- * Updates the key state after user input processing
+ * Updates the key state after user input processing.
  * @param ih a pointer to the Input_Handler whose key map needs updating
  */
 void update_key_state(Input_Handler *ih);

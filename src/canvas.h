@@ -17,6 +17,8 @@ typedef struct {
     size_t width;   ///< Width of the canvas
     size_t height;  ///< Height of the canvas
     size_t scale;   ///< Scale factor of the canvas. Used when rendering
+    uint32_t origin_x; ///< Top left x coord
+    uint32_t origin_y; ///< Top left y coord
 } Canvas;
 
 /**
@@ -35,9 +37,8 @@ void canvas_init(Canvas *c, size_t width, size_t height, size_t scale, uint32_t 
  * Frees all memory used by member variables of a Canvas outside of the struct itself, but does not
  * destroy the memory region occupied by the struct
  * @param c a pointer to the Canvas whole members must be freed
- * @param r a handle to the renderer that was used to create the Canvas' pixelbuffer
  */
-void canvas_free(Canvas *c, BOB_Renderer_Handle r);
+void canvas_free(Canvas *c);
 /**
  * Draws a canvas to the screen. Updates the Canvas' pixelbuffer with the new pixel values from
  * the pixels array. Determines the size of the destination quad using the width, height and scale member variables
@@ -61,12 +62,6 @@ void canvas_set_pixel(Canvas *c, uint32_t x, uint32_t y, uint32_t colour);
  */
 void canvas_clear_pixel(Canvas *c, uint32_t x, uint32_t y);
 /**
- * Prints the pixels array of the Canvas to the terminal. Used for debugging and
- * should not be used in production code
- * @param c a pointer to the Canvas whose pixels should be printed
- */
-void canvas_print(Canvas *c);
-/**
  * Uses Bresenham's line algorithm adapted from here: https://www.geeksforgeeks.org/dsa/bresenhams-line-generation-algorithm/
  * to draw a line between two points on a Canvas
  * @param c a pointer to the Canvas where the line should be drawn
@@ -77,5 +72,18 @@ void canvas_print(Canvas *c);
  * @param colour the colour the line whould be drawn in
  */
 void canvas_bresenham(Canvas *c, uint32_t sx, uint32_t sy, uint32_t ex, uint32_t ey, uint32_t colour);
+/**
+ * Prints the pixels array of the Canvas to the terminal. Used for debugging and
+ * should not be used in production code
+ * @param c a pointer to the Canvas whose pixels should be printed
+ */
+void canvas_print(Canvas *c);
+/**
+ * Prints the set pixels array of the Canvas to the terminal. Used for debugging and
+ * should not be used in production code. Preffered over canvas_print
+ * for large sizes where printing the full Canvas would be unreadable
+ * @param c a pointer to the Canvas whose set pixels should be printed
+ */
+void canvas_dump_set(Canvas *c);
 
 #endif

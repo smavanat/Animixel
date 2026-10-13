@@ -9,11 +9,13 @@ void canvas_init(Canvas *c, size_t width, size_t height, size_t scale, uint32_t 
     c->height = height;
     c->scale = scale;
     c->pixels = malloc(sizeof(uint32_t) * c->width * c->height);
+    c->origin_x = 0;
+    c->origin_y = 0;
     memset(c->pixels, default_colour, sizeof(uint32_t) * c->width * c->height); // Set all pixels in the struct to be the default colour
     BOB_pixelbuffer_init(r, c->width, c->height, BOB_RGBA, &c->pb);
 }
 
-void canvas_free(Canvas *c, BOB_Renderer_Handle r) {
+void canvas_free(Canvas *c) {
     free(c->pixels);
     c->pixels = NULL; // Set to null to avoid use after free issues
     BOB_pixelbuffer_free(&c->pb);
@@ -31,7 +33,8 @@ void canvas_draw(Canvas *c, BOB_Renderer_Handle renderer) {
     // Override pixelbuffer texture data with new pixels
     BOB_pixelbuffer_upload(c->pb);
     // Draw the pixelbuffer
-    BOB_draw_pixelbuffer(c->pb, (BOB_Quad){0, 0, c->width * c->scale, c->height * c->scale}, (BOB_Quad){0, 0, c->width, c->height}, (BOB_Vector4){1,1,1,1}, 20, 0.0f);
+    BOB_draw_pixelbuffer(c->pb, (BOB_Quad){c->origin_x * c->scale, c->origin_y * c->scale, c->width * c->scale, c->height * c->scale},
+                         (BOB_Quad){0, 0, c->width, c->height}, (BOB_Vector4){1,1,1,1}, 20, 0.0f);
 }
 
 void canvas_set_pixel(Canvas *c, uint32_t x, uint32_t y, uint32_t colour) {
@@ -71,4 +74,15 @@ void canvas_print(Canvas *c) {
         }
         printf("\n");
     }
+}
+
+void canvas_dump_set(Canvas *c) {
+    size_t count = 0;
+    for (size_t y = 0; y < c->height; y++)
+        for (size_t x = 0; x < c->width; x++)
+            if (c->pixels[y * c->width + x] == 0) {
+                printf("(%zu, %zu)\n", x, y);
+                count++;
+            }
+    printf("%zu pixels set\n", count);
 }

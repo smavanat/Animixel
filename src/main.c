@@ -8,12 +8,12 @@
 #endif
 
 //TODO: FIX BOB VULKAN PBO
-//      Integrate doxygen
 
 #define NDEBUG
 #define BOB_INCLUDE_GLAD
 // #define BOB_INCLUDE_VULKAN
-#include "canvas.h"
+#define CLAY_IMPLEMENTATION
+#include "ui_core.h"
 #define BOB_IMPLEMENTATION
 #include <bob.h>
 #include <GLFW/glfw3.h>
@@ -22,6 +22,7 @@
 #include <sys/time.h>
 
 #include "input.h"
+#include "math_utils.h"
 
 #define FRAME_RATE 1000 / 60.0f
 
@@ -29,6 +30,8 @@ GLFWwindow *window;
 BOB_Renderer_Handle r;
 Input_Handler handler;
 Canvas c;
+uint32_t screen_width = 800, screen_height = 600;
+BOB_Font_Handle bitmap;
 
 //Thank you Bernardo: https://stackoverflow.com/questions/1157209/is-there-an-alternative-sleep-function-in-c-to-milliseconds
 #ifdef WIN32
@@ -67,10 +70,136 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     #ifdef BOB_INCLUDE_GLAD
     glViewport(0, 0, width, height);
     #endif
-    int width_scr, height_scr;
-    glfwGetWindowSize(window, &width_scr, &height_scr);
-    BOB_renderer_update_dimensions(r, width_scr, height_scr, width, height);
+    glfwGetWindowSize(window, &screen_width, &screen_height);
+    BOB_renderer_update_dimensions(r, screen_width, screen_height, width, height);
 }
+
+/**
+ * Callback function to be used by GLFW when a mouse button's state changes.
+ * If the new state is GLFW_PRESS and the old state stored in the input_handler was KEY_JUST_RELEASED or KEY_RELEASED,
+ * sets the state to KEY_JUST_PRESSED.
+ * If the new state is GLFW_PRESS and the old state stored in the input_handler was KEY_PRESSED or KEY_JUST_PRESSED,
+ * sets the state to KEY_PRESSED.
+ * If the new state is GLFW_RELEASE and the old state stored in the input_handler was KEY_JUST_RELEASED or KEY_RELEASED,
+ * sets the state to KEY_RELEASED.
+ * If the new state is GLFW_RELEASE and the old state stored in the input_handler was KEY_JUST_PRESSED or KEY_PRESSED,
+ * sets the state to KEY_JUST_RELEASED.
+ * @param window a pointer to the GLFWwindow where the mouse button change occured
+ * @param key the mouse button whose state has changed
+ * @param action the new state of the mouse button
+ * @param mods modifier bits. Not used by this callback implementation
+ */
+void glfw_mouse_callback(GLFWwindow *window, int key, int action, int mods) {
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    if(glfwGetWindowAttrib(window, GLFW_FOCUSED) && cursor_in_bounds(&handler, 0, 0, width, height) && key < 3) {
+        int idx = MOUSE_BUTTON_LEFT+key;
+        if(action == GLFW_PRESS) {
+            if(handler.key_status[idx] == KEY_JUST_PRESSED) {
+                handler.key_status[idx] = KEY_PRESSED;
+            }
+            else if(handler.key_status[idx] == KEY_RELEASED || handler.key_status[idx] == KEY_JUST_RELEASED) {
+                handler.key_status[idx] = KEY_JUST_PRESSED;
+            }
+        }
+        else {
+            if(handler.key_status[idx] == KEY_JUST_PRESSED || handler.key_status[idx] == KEY_PRESSED) {
+                handler.key_status[idx] = KEY_JUST_RELEASED;
+            }
+            else {
+                handler.key_status[idx] = KEY_RELEASED;
+            }
+        }
+    }
+}
+
+/**
+ * Callback function to be used by GLFW when the scroll state changes.
+ * @param window a pointer to the GLFWwindow where the scroll state changed
+ * @param xpos the new scroll horizontal position
+ * @param ypos the new scroll vertical position
+ */
+void glfw_scroll_callback(GLFWwindow *window, double xpos, double ypos) {
+    if(glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
+        handler.scroll_x = xpos;
+        handler.scroll_y = ypos;
+    }
+}
+
+/**
+ * Callback function to be used by glfw when the cursor position changes.
+ * @param window a pointer to the GLFWwindow where the mouse position changed
+ * @param xpos the new x position
+ * @param ypos the new y position
+ */
+void glfw_cursor_pos_callback(GLFWwindow *window, double xpos, double ypos) {
+    if(glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
+        handler.prev_x = handler.mouse_x;
+        handler.prev_y = handler.mouse_y;
+        handler.mouse_x = xpos;
+        handler.mouse_y = ypos;
+    }
+}
+
+/**
+ * Callback function to be used by glfw when a key's state changes.
+ * If the new state is GLFW_PRESS and the old state stored in the input_handler was KEY_JUST_RELEASED or KEY_RELEASED,
+ * sets the state to KEY_JUST_PRESSED.
+ * If the new state is GLFW_PRESS and the old state stored in the input_handler was KEY_PRESSED or KEY_JUST_PRESSED,
+ * sets the state to KEY_PRESSED.
+ * If the new state is GLFW_RELEASE and the old state stored in the input_handler was KEY_JUST_RELEASED or KEY_RELEASED,
+ * sets the state to KEY_RELEASED.
+ * If the new state is GLFW_RELEASE and the old state stored in the input_handler was KEY_JUST_PRESSED or KEY_PRESSED,
+ * sets the state to KEY_JUST_RELEASED.
+ * If the new state is GLFW_REPEAT set the state to KEY_PRESSED.
+ * @param window a pointer to the GLFWwindow where the key change occured
+ * @param key the key whose state has changed
+ * @param scancode the hardware specific scancode of the key. Not used by this callback implementation
+ * @param action the new state of the key
+ * @param mods modifier bits. Not used by this callback implementation
+ */
+void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    if(glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
+        int idx = -1;
+        if(key >= 65  && key <= 90) {
+            idx = key-GLFW_KEY_A + KEY_A;
+        }
+        else if (key >= 48 && key <= 57) {
+            idx = key-GLFW_KEY_0+KEY_0;
+        }
+        else if(key == GLFW_KEY_MINUS) {
+            idx = KEY_MINUS;
+        }
+        else if(key == GLFW_KEY_EQUAL) {
+            idx = KEY_PLUS;
+        }
+
+        if(idx == -1) return;
+
+        if(action == GLFW_PRESS) {
+            if(handler.key_status[idx] == KEY_JUST_PRESSED) {
+                handler.key_status[idx] = KEY_PRESSED;
+            }
+            else if(handler.key_status[idx] == KEY_RELEASED || handler.key_status[idx] == KEY_JUST_RELEASED) {
+                handler.key_status[idx] = KEY_JUST_PRESSED;
+            }
+        }
+        else if (action == GLFW_REPEAT) {
+            if(handler.key_status[idx] != KEY_PRESSED) {
+                handler.key_status[idx] = KEY_PRESSED;
+            }
+        }
+        else {
+            if(handler.key_status[idx] == KEY_JUST_PRESSED || handler.key_status[idx] == KEY_PRESSED) {
+                handler.key_status[idx] = KEY_JUST_RELEASED;
+            }
+            else {
+                handler.key_status[idx] = KEY_RELEASED;
+            }
+        }
+    }
+}
+
 
 #ifdef BOB_INCLUDE_VULKAN
 uint8_t create_window_surface(VkInstance instance, VkSurfaceKHR *surface) {
@@ -110,6 +239,7 @@ int init(GLFWwindow **window) {
     glfwSetKeyCallback(*window, glfw_key_callback);
     glfwSetMouseButtonCallback(*window, glfw_mouse_callback);
     glfwSetCursorPosCallback(*window, glfw_cursor_pos_callback);
+    glfwSetScrollCallback(*window, glfw_scroll_callback);
 
     input_handler_init(&handler);
 
@@ -117,8 +247,10 @@ int init(GLFWwindow **window) {
         glfwTerminate();
         return 0;
     }
-    if(!BOB_create_opengl_renderer(BOB_DEFAULT_ATLAS_CAPACITY, BOB_DEFAULT_PIXELBUFFER_CAPACITY, BOB_DEFAULT_TEX_CAPACITY, BOB_DEFAULT_MATERIAL_CAPACITY, BOB_DEFAULT_FONT_CAPACITY,
-                                   800, 600, BOB_DEFAULT_VERTEX_CAPACITY, BOB_DEFAULT_INDEX_CAPACITY, BOB_DEFAULT_DRAW_CALL_CAPACITY, BOB_DEFAULT_STACK_CAPACITY, BOB_MAX_UNIFORMS, &r)) {
+    if(!BOB_create_opengl_renderer(BOB_DEFAULT_ATLAS_CAPACITY, BOB_DEFAULT_PIXELBUFFER_CAPACITY,
+                                   BOB_DEFAULT_TEX_CAPACITY, BOB_DEFAULT_MATERIAL_CAPACITY, BOB_DEFAULT_FONT_CAPACITY,
+                                   800, 600, BOB_DEFAULT_VERTEX_CAPACITY, BOB_DEFAULT_INDEX_CAPACITY,
+                                   BOB_DEFAULT_DRAW_CALL_CAPACITY, BOB_DEFAULT_STACK_CAPACITY, BOB_MAX_UNIFORMS, &r)) {
         BOB_terminate();
         glfwTerminate();
         return 0;
@@ -154,9 +286,10 @@ int init(GLFWwindow **window) {
 
     int width, height;
     glfwGetFramebufferSize(*window, &width, &height);
-    if(!BOB_create_vulkan_renderer(BOB_DEFAULT_ATLAS_CAPACITY, BOB_DEFAULT_PIXELBUFFER_CAPACITY, BOB_DEFAULT_TEX_CAPACITY, BOB_DEFAULT_MATERIAL_CAPACITY, BOB_DEFAULT_FONT_CAPACITY,
-                                  800, 600, width, height, BOB_DEFAULT_VERTEX_CAPACITY, BOB_DEFAULT_INDEX_CAPACITY, BOB_DEFAULT_DRAW_CALL_CAPACITY, BOB_DEFAULT_STACK_CAPACITY,
-                                  BOB_MAX_UNIFORMS, &create_window_surface, &r)) {
+    if(!BOB_create_vulkan_renderer(BOB_DEFAULT_ATLAS_CAPACITY, BOB_DEFAULT_PIXELBUFFER_CAPACITY, BOB_DEFAULT_TEX_CAPACITY,
+                                   BOB_DEFAULT_MATERIAL_CAPACITY, BOB_DEFAULT_FONT_CAPACITY, 800, 600, width, height,
+                                   BOB_DEFAULT_VERTEX_CAPACITY, BOB_DEFAULT_INDEX_CAPACITY, BOB_DEFAULT_DRAW_CALL_CAPACITY,
+                                   BOB_DEFAULT_STACK_CAPACITY, BOB_MAX_UNIFORMS, &create_window_surface, &r)) {
         glfwTerminate();
         return 0;
     }
@@ -168,8 +301,10 @@ int init(GLFWwindow **window) {
 void process_input(GLFWwindow *window) {
     if(glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
         if(handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED || handler.key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED) {
-            uint32_t ex = (uint32_t)(handler.mouse_x) / c.scale, ey = (uint32_t)(handler.mouse_y) / c.scale;
-            uint32_t sx = (uint32_t)(handler.prev_x) / c.scale, sy = (uint32_t)(handler.prev_y) / c.scale;
+            int32_t ex = clampi((int32_t)(handler.mouse_x / c.scale) - (int32_t)c.origin_x, 0, (int32_t)c.width);
+            int32_t ey = clampi((int32_t)(handler.mouse_y / c.scale) - (int32_t)c.origin_y, 0, (int32_t)c.height);
+            int32_t sx = clampi((int32_t)(handler.prev_x / c.scale) - (int32_t)c.origin_x, 0, (int32_t)c.width);
+            int32_t sy = clampi((int32_t)(handler.prev_y / c.scale) - (int32_t)c.origin_y, 0, (int32_t)c.height);
             canvas_set_pixel(&c, ex, ey, 0);
 
             if(handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED) {
@@ -206,6 +341,12 @@ int main(void) {
     if(init(&window)) {
         printf("Initialised\n");
         canvas_init(&c, 100, 100, 4, UINT32_MAX, r);
+        int8_t res = BOB_load_bmf_font(r, "../data/test.fnt", BOB_BMF_TEXT, &bitmap);
+        if(res <= 0) BOB_print_parsing_error();
+        load_tex("../data/test.png", bitmap);
+
+        clay_init(screen_width, screen_height);
+        Custom_Element_Data canvas_data = {.type = CUSTOM_ELEMENT_TYPE_CANVAS, .canvas = &c};
 
         struct timeval stop, start; //Store the start and end times of a frame
         float dt = 0.0f; //Holds the time passed between frames
@@ -215,9 +356,12 @@ int main(void) {
 
             //Clear the screen
             BOB_Vector2 pos = (BOB_Vector2){100, 100};
+            clay_update_dimensions(&handler, dt, screen_width, screen_height);
+            Clay_RenderCommandArray render_commands = editor_layout(dt, &canvas_data);
 
             BOB_renderer_begin(r, (float[4]){0.0f, 0.0f, 0.0f, 0.0f});
-                canvas_draw(&c, r);
+                clay_render(r, render_commands);
+                // canvas_draw(&c, r);
             BOB_renderer_end(r);
             process_input(window);
             update_key_state(&handler);
@@ -233,7 +377,7 @@ int main(void) {
             }
         }
 
-        canvas_free(&c, r);
+        canvas_free(&c);
     }
     glfwTerminate();
     BOB_terminate();
