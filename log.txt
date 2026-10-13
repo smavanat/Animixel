@@ -4,3 +4,35 @@
  - Can only draw black lines on white canvas.
  - Implemented Bresenham's line algorithm so drawing was easier
  - Added doxygen config file and generated documentation
+13/10/26:
+ - Added the Clay UI library to externals
+ - Added origin_x/y member variables to the Canvas struct so that it could be drawn at different positions and pixel settings could
+   be computed relative to the origin (top left).
+ - Made a simple UI for the program:
+        - Central region is still reserved for the canvas
+        - RHS contains a tool bar with three buttons: D(raw), E(rase), S(shape)
+        - Top contains a menu bar with just a file button
+        - Currently none of these buttons do anything
+        - Created a simple Custom_Element_Data struct to act as a tagged union for rendering custom elements (the canvas) as demo'd in the Clay docs
+        - Created a function for repeatedly creating static (non-resizeable) button widgets
+ - Created a math_utils.h/c for holding maths utility functions used by the codebase not provided by math.h.
+        - Currently only contains clamp functions for signed and unsigned integers
+ - Fixed Bresenham implementation:
+        - Changed the inputs to be int32_t instead of uint32_t so could use proper
+          signed version of Bresenham's to get correct line generation on steep slopes
+        - Still clamped the values between ([0, canvas.width), [0, canvas.height)) to make sure that there were no out of bounds errors
+        - Changed canvas_set_pixel and canvas_erase_pixel to also accept int32_t so that they matched canvas_bresenham, and just made
+          them do bounds checking for < 0 to avoid errors.
+        - Made the drawing code in process_input calculate the pixel positions (ex/y, sx/y) relative to the origin of the canvas and stored
+          them as int32_t to match the input to canvas_bresenham
+        - Added a check to see if the mouse was actually in the canvas before making calls to draw something on the canvas (it was causing
+          issues where clicks outside the canvas would draw pixels clamped to the edge of the canvas)
+        - Moved the code for updating prev_x/y in the Input_Handler handler to process_input from glfw_cursor_pos_callback as there can
+          be multiple mouse position events in a frame, and for the bresenham implementation to work, it needed to only calculate the distance
+          between the position in the previous frame and current position, not previous event (as it would cause gaps in the line being drawn)
+ - Moved callback functions out of input.h/c and into main.c as they were more relevant to GLFW itself than input handling and got rid of
+   an unnecessary extern
+ - Turned off vsync in GLFW as it was causing screen tearing and jittering in the top and right when rapidly resizing which was very bad UX.
+   Also set the background colour of the renderer to pink so that we could easily see if such a problem occurred again. The problem still occurs
+   occasionally but is not a major issue. Could fix easily by just setting background colour to match main colour of app, then would be no issue
+

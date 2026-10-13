@@ -22,7 +22,6 @@
 #include <sys/time.h>
 
 #include "input.h"
-#include "math_utils.h"
 
 #define FRAME_RATE 1000 / 60.0f
 
@@ -31,6 +30,7 @@ BOB_Renderer_Handle r;
 Input_Handler handler;
 Canvas c;
 uint32_t screen_width = 800, screen_height = 600;
+uint32_t last_fb_w = 800, last_fb_h = 600;
 BOB_Font_Handle bitmap;
 
 //Thank you Bernardo: https://stackoverflow.com/questions/1157209/is-there-an-alternative-sleep-function-in-c-to-milliseconds
@@ -235,6 +235,7 @@ int init(GLFWwindow **window) {
 
     //Setting callback functions
     glfwMakeContextCurrent(*window);
+    glfwSwapInterval(0); // Turn off Vsync to stop screen tearing when resizing
     glfwSetFramebufferSizeCallback(*window, framebuffer_size_callback);
     glfwSetKeyCallback(*window, glfw_key_callback);
     glfwSetMouseButtonCallback(*window, glfw_mouse_callback);
@@ -360,29 +361,51 @@ int main(void) {
         struct timeval stop, start; //Store the start and end times of a frame
         float dt = 0.0f; //Holds the time passed between frames
 
+        // TODO: SCREEN TEARING STILL HAPPENS AT TOP. NEED TO FIX
         while(!glfwWindowShouldClose(window)) {
-            gettimeofday(&start, NULL); //Getting time at start of frame
+            glfwPollEvents();
 
-            //Clear the screen
-            BOB_Vector2 pos = (BOB_Vector2){100, 100};
-            clay_update_dimensions(&handler, dt, screen_width, screen_height);
-            Clay_RenderCommandArray render_commands = editor_layout(dt, &canvas_data);
+            // Force window to resize if dimensions do not match to avoid screen tearing
+            int win_w, win_h, fb_w, fb_h;
+            glfwGetWindowSize(window, &win_w, &win_h);
+            glfwGetFramebufferSize(window, &fb_w, &fb_h);
 
-            BOB_renderer_begin(r, (float[4]){0.0f, 0.0f, 0.0f, 0.0f});
-                clay_render(r, render_commands);
-                // canvas_draw(&c, r);
-            BOB_renderer_end(r);
+            if (win_w != screen_width || win_h != screen_height || fb_w != last_fb_w || fb_h != last_fb_h) {
+                glViewport(0, 0, fb_w, fb_h);
+                BOB_renderer_update_dimensions(r, win_w, win_h, fb_w, fb_h);
+                screen_width = win_w;  screen_height = win_h;
+                last_fb_w = fb_w;      last_fb_h = fb_h;
+            }
+
             process_input(window);
             update_key_state(&handler);
 
+            gettimeofday(&start, NULL); //Getting time at start of frame
+
+            //Clear the screen
+            clay_update_dimensions(&handler, dt, screen_width, screen_height);
+            Clay_RenderCommandArray render_commands = editor_layout(dt, &canvas_data);
+
+            BOB_renderer_begin(r, (float[4]){1.0f, 0.0f, 1.0f, 1.0f});
+                clay_render(r, render_commands);
+            BOB_renderer_end(r);
+
             glfwSwapBuffers(window);
-            glfwPollEvents();
             gettimeofday(&stop, NULL); //Get the time at the end of the frame
             dt = (stop.tv_sec - start.tv_sec) * 1000 + (stop.tv_usec - start.tv_usec) / 1000.0f; //Get the frame length
             // If the frame took less time than the set frame rate, wait until the time is the frame rate
             if(dt < FRAME_RATE) {
+                // TODO: Unsure which one of these to use in the final version. Set it to be a macro for now
+                #if 0
+                // Returns early on resize/input. This is better than just capping at 60 as prevents screen tearing when resizing
+                glfwWaitEventsTimeout((FRAME_RATE - dt) / 1000.0);
+                // Measure the full iteration, including however long we waited
+                gettimeofday(&stop, NULL);
+                dt = (stop.tv_sec - start.tv_sec) * 1000 + (stop.tv_usec - start.tv_usec) / 1000.0f;
+                #else
                 sleep_ms((int)FRAME_RATE - dt);
                 dt = FRAME_RATE;
+                #endif
             }
         }
 

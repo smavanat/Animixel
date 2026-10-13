@@ -149,7 +149,7 @@ void clay_render(BOB_Renderer_Handle r, Clay_RenderCommandArray renderCommands) 
             // The renderer should begin clipping all future draw commands, only rendering content that falls within the provided boundingBox.
             case CLAY_RENDER_COMMAND_TYPE_SCISSOR_START: {
                 BOB_Clip_Dir dir;
-                if(renderCommand->renderData.clip.vertical && renderCommand->renderData.clip.vertical) dir = BOB_CLIP_BOTH;
+                if(renderCommand->renderData.clip.vertical && renderCommand->renderData.clip.horizontal) dir = BOB_CLIP_BOTH;
                 else if(renderCommand->renderData.clip.vertical) dir = BOB_CLIP_VERT;
                 else dir = BOB_CLIP_HORZ;
                 BOB_start_clip(r, (BOB_Quad){renderCommand->boundingBox.x, renderCommand->boundingBox.y, renderCommand->boundingBox.width, renderCommand->boundingBox.height}, dir);
@@ -207,11 +207,11 @@ Clay_RenderCommandArray editor_layout(float dt, Custom_Element_Data *canvas) {
                 .childAlignment = {CLAY_ALIGN_X_CENTER, CLAY_ALIGN_Y_CENTER}}, .backgroundColor = COLOUR_LIGHT}) {
                 CLAY(CLAY_ID("Canvas"), {.custom = {.customData = canvas}}) {}
             }
-            CLAY(CLAY_ID("Buttons"), {.layout = {.layoutDirection = CLAY_TOP_TO_BOTTOM, .sizing = {CLAY_SIZING_GROW(0, 72), CLAY_SIZING_GROW(0)},
-                .childGap = 16, .padding = CLAY_PADDING_ALL(4), .childAlignment = {CLAY_ALIGN_X_RIGHT, CLAY_ALIGN_Y_CENTER}}, .backgroundColor = COLOUR_RED}) {
-                create_static_button(1, 64, 64, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("D"), NULL, NULL);
-                create_static_button(2, 64, 64, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("E"), NULL, NULL);
-                create_static_button(3, 64, 64, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("S"), NULL, NULL);
+            CLAY(CLAY_ID("Buttons"), {.layout = {.layoutDirection = CLAY_TOP_TO_BOTTOM, .sizing = {CLAY_SIZING_GROW(0, 44), CLAY_SIZING_GROW(0)},
+                .childGap = 8, .padding = CLAY_PADDING_ALL(4), .childAlignment = {CLAY_ALIGN_X_RIGHT, CLAY_ALIGN_Y_CENTER}}, .backgroundColor = COLOUR_RED}) {
+                create_static_button(1, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("D"), NULL, NULL);
+                create_static_button(2, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("E"), NULL, NULL);
+                create_static_button(3, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("S"), NULL, NULL);
             }
         }
     }

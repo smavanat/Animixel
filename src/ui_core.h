@@ -25,6 +25,25 @@ typedef struct {
     };
 } Custom_Element_Data;
 
+typedef enum {
+    BUTTON_DOWN,
+    BUTTON_UP,
+} Button_State;
+
+typedef enum {
+    BUTTON_DRAW,
+    BUTTON_ERASE,
+    BUTTON_SHAPE,
+    BUTTON_FILE,
+    NUM_BUTTONS
+} Button_Type;
+
+typedef struct {
+    Button_State buttons[NUM_BUTTONS];
+} Button_State_Manager;
+
+extern Button_State_Manager bs_manager; //> Manages UI bs
+
 /**
  * Creates a clay button widget whose size does not change
  * @param id the unique numeric id of the button to differentiate it from other buttons
