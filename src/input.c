@@ -24,7 +24,13 @@ int cursor_in_bounds(Input_Handler *ih, float min_x, float min_y, float max_x, f
     return 1;
 }
 
-void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *c) {
+/**
+ * Helper function to update the button status.
+ * Guaranteed to always be called as a part of process_input
+ * @param ih a pointer to the Input_Handler holding the key state
+ * @param bs_manager a pointer to the Button_State_Manager holding the button state
+ */
+static void update_button_status(Input_Handler *ih, Button_State_Manager *bs_manager) {
     if(ih->key_status[KEY_D] == KEY_JUST_PRESSED) {
         bs_manager->stb = (bs_manager->stb == BUTTON_DRAW) ? BUTTON_NONE : BUTTON_DRAW;
         update_sbp(bs_manager, BUTTON_DRAW);
@@ -57,6 +63,43 @@ void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *
         bs_manager->stb = (bs_manager->stb == BUTTON_EMPTY_CIRCLE) ? BUTTON_NONE : BUTTON_EMPTY_CIRCLE;
         update_sbp(bs_manager, BUTTON_EMPTY_CIRCLE);
     }
+}
+
+/**
+ * Helper function that makes the calls to the relevant functions when
+ * drawing shapes. Created to avoid code dupe.
+ * @param ih a pointer to an Input_Handler used to determine mouse state
+ * @param draw_start a function pointer for the draw function to be called while the user is drawing
+ * @param draw_end a functioin pointer for the draw function to be called when the user has finished drawing
+ */
+static inline void draw_shape(Input_Handler *ih, Canvas *c, void (*draw_start)(Canvas *c, int32_t sx, int32_t sy, int32_t px, int32_t py),
+                       void (*draw_end)(Canvas *c, int32_t sx, int32_t sy, int32_t px, int32_t py)) {
+    // Calculate the canvas position this and last frame from stored mouse position
+    int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
+    int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
+    int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
+    int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
+    switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
+        case KEY_JUST_PRESSED: {
+            if(sx >= 0 && sx < c->width && sy >= 0 && sy < c->height)
+                canvas_begin_shape(c, sx, sy);
+            break;
+        }
+        case KEY_PRESSED: {
+            draw_start(c, sx, sy, px, py);
+            break;
+        }
+        case KEY_JUST_RELEASED: {
+            draw_end(c, sx, sy, px, py);
+            canvas_end_shape(c);
+            break;
+        }
+        default: break;
+    }
+}
+
+void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *c) {
+    update_button_status(ih, bs_manager);
 
     if(ih->key_status[MOUSE_BUTTON_LEFT] != KEY_RELEASED) {
         switch(bs_manager->stb) {
@@ -82,119 +125,23 @@ void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *
                 break;
             }
             case BUTTON_LINE: {
-                int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
-                int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
-                int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
-                int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
-                switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
-                    case KEY_JUST_PRESSED: {
-                        if(sx >= 0 && sx < c->width && sy >= 0 && sy < c->height)
-                            canvas_begin_shape(c, sx, sy);
-                        break;
-                    }
-                    case KEY_PRESSED: {
-                        canvas_draw_line(c, sx, sy, px, py);
-                        break;
-                    }
-                    case KEY_JUST_RELEASED: {
-                        canvas_draw_line(c, sx, sy, px, py);
-                        canvas_end_shape(c);
-                        break;
-                    }
-                    default: break;
-                }
+                draw_shape(ih, c, &canvas_draw_line, &canvas_draw_line);
                 break;
             }
             case BUTTON_EMPTY_RECT: {
-                int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
-                int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
-                int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
-                int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
-                switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
-                    case KEY_JUST_PRESSED: {
-                        canvas_begin_shape(c, sx, sy);
-                        break;
-                    }
-                    case KEY_PRESSED: {
-                        canvas_draw_empty_rect(c, sx, sy, px, py);
-                        break;
-                    }
-                    case KEY_JUST_RELEASED: {
-                        canvas_draw_empty_rect(c, sx, sy, px, py);
-                        canvas_end_shape(c);
-                        break;
-                    }
-                    default: break;
-                }
+                draw_shape(ih, c, &canvas_draw_empty_rect, &canvas_draw_empty_rect);
                 break;
             }
             case BUTTON_FILLED_RECT: {
-                int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
-                int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
-                int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
-                int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
-                switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
-                    case KEY_JUST_PRESSED: {
-                        canvas_begin_shape(c, sx, sy);
-                        break;
-                    }
-                    case KEY_PRESSED: {
-                        canvas_draw_empty_rect(c, sx, sy, px, py);
-                        break;
-                    }
-                    case KEY_JUST_RELEASED: {
-                        canvas_draw_filled_rect(c, sx, sy, px, py);
-                        canvas_end_shape(c);
-                        break;
-                    }
-                    default: break;
-                }
+                draw_shape(ih, c, &canvas_draw_empty_rect, &canvas_draw_filled_rect);
                 break;
             }
             case BUTTON_EMPTY_CIRCLE: {
-                int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
-                int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
-                int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
-                int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
-                switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
-                    case KEY_JUST_PRESSED: {
-                        canvas_begin_shape(c, sx, sy);
-                        break;
-                    }
-                    case KEY_PRESSED: {
-                        canvas_draw_empty_circle(c, sx, sy, px, py);
-                        break;
-                    }
-                    case KEY_JUST_RELEASED: {
-                        canvas_draw_empty_circle(c, sx, sy, px, py);
-                        canvas_end_shape(c);
-                        break;
-                    }
-                    default: break;
-                }
+                draw_shape(ih, c, &canvas_draw_empty_circle, &canvas_draw_empty_circle);
                 break;
             }
             case BUTTON_FILLED_CIRCLE: {
-                int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
-                int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
-                int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
-                int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
-                switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
-                    case KEY_JUST_PRESSED: {
-                        canvas_begin_shape(c, sx, sy);
-                        break;
-                    }
-                    case KEY_PRESSED: {
-                        canvas_draw_empty_circle(c, sx, sy, px, py);
-                        break;
-                    }
-                    case KEY_JUST_RELEASED: {
-                        canvas_draw_filled_circle(c, sx, sy, px, py);
-                        canvas_end_shape(c);
-                        break;
-                    }
-                    default: break;
-                }
+                draw_shape(ih, c, &canvas_draw_empty_circle, &canvas_draw_filled_circle);
                 break;
             }
             default: break;

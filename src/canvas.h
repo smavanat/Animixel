@@ -27,7 +27,8 @@ typedef struct {
 /**
  * Initialises a Canvas. Does not allocate memory for the struct itself (this must be done beforehand
  * using either a local struct variable or a heap allocation), but will allocate memory for the pixels
- * buffer and will create the PixelBuffer via a call to BOB
+ * buffer and will create the PixelBuffer via a call to BOB.
+ * Sets origin_x/y to default values of 0 and shape_x/y to sentinel values of UINT32_MAX
  * @param c a pointer to a Canvas to be initialised
  * @param width the desired width of the Canvas
  * @param height the desired height of the Canvas
@@ -67,12 +68,79 @@ void canvas_set_pixel(Canvas *c, int32_t x, int32_t y, uint32_t colour);
  * @param colour the colour the line whould be drawn in
  */
 void canvas_bresenham(Canvas *c, int32_t sx, int32_t sy, int32_t ex, int32_t ey, uint32_t colour);
+/**
+ * Function to be called before shape drawing starts.
+ * Sets the start position of the shape (where the user first clicked) in the Canvas
+ * @param c a pointer to the Canvas where the shape drawing started
+ * @param sx the x coordinate of the shape start position
+ * @param sy the y coordinate of the shape start position
+ */
 void canvas_begin_shape(Canvas *c, int32_t sx, int32_t sy);
+/**
+ * Ends shape drawing by resetting the Canvas' shape_x/y
+ * member variables to the sentinel value of UINT32_MAX
+ * @param c a pointer to Canvas where the shape drawing finished
+ */
 void canvas_end_shape(Canvas *c);
+/**
+ * Draws a line by running two passes of Bresenham's algorithm.
+ * The first clears the line drawn between (start_x, start_y) and
+ * (px, py) to the colours stored in the prev_pixels snapshot
+ * The second draws a new line between (start_x, start_y) and (sx, sy)
+ * @param c a pointer to the canvas where the line should be drawn
+ * @param sx the x coordinate of the line endpoint this frame
+ * @param sy the y coordinate of the line endpoint this frame
+ * @param px the x coordinate of the line endpoint last frame
+ * @param py the y coordinate of the line endpoint last frame
+ */
 void canvas_draw_line(Canvas *c, int32_t sx, int32_t sy, int32_t px, int32_t py);
+/**
+ * Draws a filled rect in two passes of the Canvas grid.
+ * The first clears the rect drawn between (start_x, start_y) and
+ * (px, py) to the colours stored in the prev_pixels snapshot.
+ * The second draws a new rect between (start_x, start_y) and (sx, sy)
+ * @param c a pointer to the canvas where the rect should be drawn
+ * @param sx the x coordinate of the rect endpoint this frame
+ * @param sy the y coordinate of the rect endpoint this frame
+ * @param px the x coordinate of the rect endpoint last frame
+ * @param py the y coordinate of the rect endpoint last frame
+ */
 void canvas_draw_filled_rect(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py);
+/**
+ * Draws a empty rect in two passes of the Canvas grid.
+ * The first clears the rect drawn between (start_x, start_y) and
+ * (px, py) to the colours stored in the prev_pixels snapshot.
+ * The second draws a new rect between (start_x, start_y) and (sx, sy)
+ * @param c a pointer to the canvas where the rect should be drawn
+ * @param sx the x coordinate of the rect endpoint this frame
+ * @param sy the y coordinate of the rect endpoint this frame
+ * @param px the x coordinate of the rect endpoint last frame
+ * @param py the y coordinate of the rect endpoint last frame
+ */
 void canvas_draw_empty_rect(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py);
+/**
+ * Draws a filled circle in two passes of the Canvas grid.
+ * The first clears the circle with radius = sqrt(pow(px - start_x, 2), pow(py - start_y, 2))
+ * to the colours stored in the prev_pixels snapshot
+ * The second draws a new circle with radius = sqrt(pow(sx - start_x, 2), pow(sy - start_y, 2))
+ * @param c a pointer to the canvas where the circle should be drawn
+ * @param sx the x coordinate of the mouse pointer this frame
+ * @param sy the y coordinate of the mouse pointer this frame
+ * @param px the x coordinate of the mouse pointer last frame
+ * @param py the y coordinate of the mouse pointer last frame
+ */
 void canvas_draw_filled_circle(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py);
+/**
+ * Draws an empty circle in two passes of the Canvas grid using the Midpoint Circle Algorithm.
+ * The first clears the circle with radius = sqrt(pow(px - start_x, 2), pow(py - start_y, 2))
+ * to the colours stored in the prev_pixels snapshot
+ * The second draws a new circle with radius = sqrt(pow(sx - start_x, 2), pow(sy - start_y, 2))
+ * @param c a pointer to the canvas where the circle should be drawn
+ * @param sx the x coordinate of the mouse pointer this frame
+ * @param sy the y coordinate of the mouse pointer this frame
+ * @param px the x coordinate of the mouse pointer last frame
+ * @param py the y coordinate of the mouse pointer last frame
+ */
 void canvas_draw_empty_circle(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py);
 
 /**

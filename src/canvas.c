@@ -74,9 +74,11 @@ void canvas_bresenham(Canvas *c, int32_t x1, int32_t y1, int32_t x2, int32_t y2,
 }
 
 void canvas_begin_shape(Canvas *c, int32_t sx, int32_t sy) {
-    c->shape_x = (uint32_t)clampi(sx, 0, c->width - 1);
-    c->shape_y = (uint32_t)clampi(sy, 0, c->width - 1);
+    if(sx < 0 || sx >= c->width || sy < 0 || sy >= c->width) return; // Early exit if invalid start position
+    c->shape_x = (uint32_t)sx;
+    c->shape_y = (uint32_t)sy;
 
+    // Save a snapshot of the pixel grid before shape drawing started
     memcpy(c->prev_pixels, c->pixels, sizeof(uint32_t) * c->width * c->height);
 }
 
@@ -120,11 +122,13 @@ void canvas_draw_line(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py)
 void canvas_draw_filled_rect(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py) {
     if(c->shape_x >= c->width || c->shape_y >= c->height) return; // Early exit if the shape start is invalid
 
+    // Clamp the values to be within the grid
     ex = clampi(ex, 0, c->width - 1);
     px = clampi(px, 0, c->width - 1);
     ey = clampi(ey, 0, c->height - 1);
     py = clampi(py, 0, c->height - 1);
 
+    // Conver to int32_t for ease
     int32_t sx = (int32_t)c->shape_x;
     int32_t sy = (int32_t)c->shape_y;
 
@@ -146,56 +150,83 @@ void canvas_draw_filled_rect(Canvas *c, int32_t ex, int32_t ey, int32_t px, int3
 void canvas_draw_empty_rect(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py) {
     if(c->shape_x >= c->width || c->shape_y >= c->height) return; // Early exit if the shape start is invalid
 
+    // Clamp the values to be within the grid
     ex = clampi(ex, 0, c->width - 1);
     px = clampi(px, 0, c->width - 1);
     ey = clampi(ey, 0, c->height - 1);
     py = clampi(py, 0, c->height - 1);
 
+    // Conver to int32_t for ease
     int32_t sx = (int32_t)c->shape_x;
     int32_t sy = (int32_t)c->shape_y;
 
-    int32_t start_x = mini(sx, px);
-    int32_t end_x = maxi(sx, px);
-    int32_t start_y = mini(sy, py);
-    int32_t end_y = maxi(sy, py);
+    // Getting grid dimensions
+    int32_t start_x = mini(sx, px); //Left
+    int32_t end_x = maxi(sx, px); //Right
+    int32_t start_y = mini(sy, py); //Top
+    int32_t end_y = maxi(sy, py); //Bottom
 
     // Replace the pixels in the old rectangle
+    // Set the pixels at the left and right
     for(int32_t x = start_x; x <= end_x; x++) {
         canvas_set_pixel(c, x, start_y, c->prev_pixels[(start_y * c->width) + x]);
         canvas_set_pixel(c, x, end_y, c->prev_pixels[(end_y * c->width) + x]);
     }
+    // Set the pixels at the top and bottom. Shrink the bounds by 1
+    // on each side so we do not refill pixels that where set by the previous loop
     for(int32_t y = start_y+1; y < end_y; y++) {
         canvas_set_pixel(c, start_x, y, c->prev_pixels[(y * c->width) + start_x]);
         canvas_set_pixel(c, end_x, y, c->prev_pixels[(y * c->width) + end_x]);
     }
 
-    start_x = mini(sx, ex);
-    end_x = maxi(sx, ex);
-    start_y = mini(sy, ey);
-    end_y = maxi(sy, ey);
+    start_x = mini(sx, ex); //Left
+    end_x = maxi(sx, ex); //Right
+    start_y = mini(sy, ey); //Top
+    end_y = maxi(sy, ey); //Bottom
     // Set the pixels in the new rectangle
+    // Set the pixels at the left and right
     for(int32_t x = start_x; x <= end_x; x++) {
         canvas_set_pixel(c, x, start_y, UINT32_MAX);
         canvas_set_pixel(c, x, end_y, UINT32_MAX);
     }
+    // Set the pixels at the top and bottom. Shrink the bounds by 1
+    // on each side so we do not refill pixels that where set by the previous loop
     for(int32_t y = start_y+1; y < end_y; y++) {
         canvas_set_pixel(c, start_x, y, UINT32_MAX);
         canvas_set_pixel(c, end_x, y, UINT32_MAX);
     }
 }
 
-static void circle_plot(Canvas *c, int32_t x, int32_t y, uint32_t colour, int restore) {
-    if (x < 0 || y < 0 || x >= (int32_t)c->width || y >= (int32_t)c->height) return;
+/**
+ * Helper function to plot pixels for a circle and make sure that they are
+ * actually in the grid so that we do not get memory access errors.
+ * @param c a pointer to the canvas where the circle should be drawn
+ * @param x the x coord of the circle point
+ * @param y the y coord of the circle point
+ * @param colour the colour the circle point should take
+ * @param restore a bool holding whether we should use the given colour or the one stored in prev_pixels
+ */
+static void circle_plot(Canvas *c, int32_t x, int32_t y, uint32_t colour, uint8_t restore) {
+    if (x < 0 || y < 0 || x >= (int32_t)c->width || y >= (int32_t)c->height) return; // Return if the pixel is outside the grid
     canvas_set_pixel(c, x, y, restore ? c->prev_pixels[(size_t)y * c->width + x] : colour);
 }
 
-static void circle_points(Canvas *c, int32_t cx, int32_t cy, int32_t x, int32_t y,
+/**
+ * Plots the points in all the octants for the midpoint circle algorithm.
+ * @param cx the x coord of the center of the circle
+ * @param cy the y coord of the center of the circle
+ * @param x the x coord of the circle point in one octant
+ * @param y the y coord of the circle point in one octant
+ * @param colour the colour the circle point should take
+ * @param restore a bool holding whether we should use the given colour or the one stored in prev_pixels
+ */
+static inline void circle_points(Canvas *c, int32_t cx, int32_t cy, int32_t x, int32_t y,
                           uint32_t colour, int restore) {
     circle_plot(c, cx + x, cy + y, colour, restore);
     circle_plot(c, cx - x, cy + y, colour, restore);
     circle_plot(c, cx + x, cy - y, colour, restore);
     circle_plot(c, cx - x, cy - y, colour, restore);
-    if (x != y) {
+    if (x != y) { // If we are on the lines of symmetry do not need to plot the extra points
         circle_plot(c, cx + y, cy + x, colour, restore);
         circle_plot(c, cx - y, cy + x, colour, restore);
         circle_plot(c, cx + y, cy - x, colour, restore);
@@ -203,7 +234,16 @@ static void circle_points(Canvas *c, int32_t cx, int32_t cy, int32_t x, int32_t 
     }
 }
 
-static void empty_circle_pass(Canvas *c, int32_t cx, int32_t cy, int32_t r, uint32_t colour, int restore) {
+/**
+ * Function to draw/clear an empty circle. Uses the midpoint circle algorithm
+ * @param c a pointer to the Canvas where the circle should be cleared/drawn
+ * @param cx the x coord of the center of the circle
+ * @param cy the y coord of the center of the circle
+ * @param r the radius of the circle
+ * @param colour the colour the circle outline should be drawn in
+ * @param restore a flag for whether the circle should be drawn or cleared
+ */
+static void empty_circle_pass(Canvas *c, int32_t cx, int32_t cy, int32_t r, uint32_t colour, uint8_t restore) {
     if (r <= 0) { circle_plot(c, cx, cy, colour, restore); return; }
 
     int32_t x = r, y = 0, p = 1 - r;
@@ -218,6 +258,9 @@ static void empty_circle_pass(Canvas *c, int32_t cx, int32_t cy, int32_t r, uint
     }
 }
 
+/**
+ * Returns the radius of a circle the equation dx*dx + dy*dy = r
+ */
 static int32_t dist_i32(int32_t dx, int32_t dy) {
     return (int32_t)lround(sqrt((double)dx * dx + (double)dy * dy));
 }
@@ -232,13 +275,23 @@ void canvas_draw_empty_circle(Canvas *c, int32_t ex, int32_t ey, int32_t px, int
     empty_circle_pass(c, sx, sy, dist_i32(ex - sx, ey - sy), UINT32_MAX, 0);  // draw this frame
 }
 
-static void filled_circle_pass(Canvas *c, int32_t cx, int32_t cy, int32_t r, uint32_t colour, int restore) {
+/**
+ * Function to draw/clear a filled circle.
+ * @param c a pointer to the Canvas where the circle should be cleared/drawn
+ * @param cx the x coord of the center of the circle
+ * @param cy the y coord of the center of the circle
+ * @param r the radius of the circle
+ * @param colour the colour the circle outline should be drawn in
+ * @param restore a flag for whether the circle should be drawn or cleared
+ */
+static void filled_circle_pass(Canvas *c, int32_t cx, int32_t cy, int32_t r, uint32_t colour, uint8_t restore) {
     if (r <= 0) { circle_plot(c, cx, cy, colour, restore); return; }
     int32_t sr = r * r;
 
     for(int32_t y = 0; y <= r; y++) {
         for(int32_t x = 0; x <= r; x++) {
-            if(y * y + x * x <= sr) {
+            if(y * y + x * x <= sr) { // Check if the point is in the circle
+                // Mirror the current point in all 4 quadrants
                 circle_plot(c, cx + x, cy + y, colour, restore);
                 if (x) circle_plot(c, cx - x, cy + y, colour, restore);
                 if (y) circle_plot(c, cx + x, cy - y, colour, restore);

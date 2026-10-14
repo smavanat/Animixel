@@ -75,17 +75,16 @@ typedef struct {
 
 /// Enum to hold the different buttons
 typedef enum {
-    BUTTON_DRAW,
-    BUTTON_ERASE,
-    BUTTON_SHAPE,
-    BUTTON_FILE,
-    BUTTON_LINE,
-    BUTTON_EMPTY_RECT,
-    BUTTON_FILLED_RECT,
-    BUTTON_EMPTY_CIRCLE,
-    BUTTON_FILLED_CIRCLE,
-    BUTTON_NONE,
-    NUM_BUTTONS
+    BUTTON_DRAW,            ///< Button to draw freehand
+    BUTTON_ERASE,           ///< Button to erase
+    BUTTON_SHAPE,           ///< Button to select a shape to draw with
+    BUTTON_FILE,            ///< Button to open the file menu
+    BUTTON_LINE,            ///< Button to start drawing a line
+    BUTTON_EMPTY_RECT,      ///< Button to start drawing an empty rect
+    BUTTON_FILLED_RECT,     ///< Button to start drawing a filled rect
+    BUTTON_EMPTY_CIRCLE,    ///< Button to start drawing an empty circle
+    BUTTON_FILLED_CIRCLE,   ///< Button to start drawing a filled circle
+    BUTTON_NONE,            ///< Sentinel value to represent no button selected
 } Button_Type;
 
 /// Struct to manage the state of all the buttons similar to Input_Handler
@@ -119,8 +118,24 @@ void update_key_state(Input_Handler *ih);
  */
 int cursor_in_bounds(Input_Handler *ih, float min_x, float min_y, float max_x, float max_y);
 
+/**
+ * Initialises a Button_State_Manager. Sets button values to BUTTON_NONE and sbp to "S"
+ * @param bs a pointer to the Button_State_Manager to initialise
+ */
 void button_state_manager_init(Button_State_Manager *bs);
+/**
+ * Processes user input and updates button state
+ * @param ih a pointer to the Input_Handler holding the input state
+ * @param bs_manager a pointer to the Button_State_Manager holding the button state
+ * @param c a pointer to a canvas that could be affected by user input
+ */
 void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *c);
+/**
+ * Helper function to update the string displayed in the Shape button
+ * Called when a button/button hotkey is pressed
+ * @param bs_manager a pointer to the Button_State_Manager holding the button state
+ * @param t the button just pressed
+ */
 void update_sbp(Button_State_Manager *bs_manager, Button_Type t);
 
 #endif

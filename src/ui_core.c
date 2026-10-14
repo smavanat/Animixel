@@ -219,6 +219,9 @@ Clay_RenderCommandArray editor_layout(float dt, Custom_Element_Data *canvas) {
                 create_static_button(BUTTON_ERASE, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("E"), set_toolbar_button_pressed_cb, (void *)BUTTON_ERASE);
                 create_static_button(BUTTON_SHAPE, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, bs_manager.sbp, set_toolbar_button_pressed_cb, (void *)BUTTON_SHAPE);
             }
+
+            // Generates floating toolbar holding all of the shape options
+            // if the shape button is pressed
             if(bs_manager.stb == BUTTON_SHAPE) {
                 CLAY(CLAY_ID("ShapeOptions"),{.layout = {.layoutDirection = CLAY_LEFT_TO_RIGHT, .childGap = 2, .padding = CLAY_PADDING_ALL(2)},
                      .floating = {.parentId = CLAY_IDI("Button", BUTTON_SHAPE).id, .attachTo = CLAY_ATTACH_TO_ELEMENT_WITH_ID, .zIndex = 20,

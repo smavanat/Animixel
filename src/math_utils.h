@@ -32,15 +32,27 @@ static inline uint32_t clampui(uint32_t val, uint32_t min, uint32_t max) {
     return val;
 }
 
+/**
+ * Returns the max between two integers a and b
+ */
 static inline int32_t maxi(int32_t a, int32_t b) {
     return (a > b) ? a : b;
 }
+/**
+ * Returns the max between two unsigned integers a and b
+ */
 static inline uint32_t maxui(uint32_t a, uint32_t b) {
     return (a > b) ? a : b;
 }
+/**
+ * Returns the min between two integers a and b
+ */
 static inline int32_t mini(int32_t a, int32_t b) {
     return (a < b) ? a : b;
 }
+/**
+ * Returns the min between two unsigned integers a and b
+ */
 static inline uint32_t minui(uint32_t a, uint32_t b) {
     return (a < b) ? a : b;
 }
