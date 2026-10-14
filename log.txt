@@ -48,4 +48,11 @@
         - Made the button template show a border around the button if it was the currently selected on to improve UX. Had to fix renderer
           since it drew a quad for the border for some reason, and also only the left side of the border.width struct acutally had any thickness?????
           Strange bug
- 
+14/10/26:
+ - Added a floating toolbar that pops up when the shape button is pressed. The toolbar contains the buttons for drawing lines and filled/unfilled rects/circles
+ - Extended the Canvas struct so that it contained a second buffer prev_pixels that holds a snapshot of the pixels just before the shape drawing started.
+ - Also holds shape_x/y which is where the shape drawing started from
+ - Implemented drawing functions for lines, rects and circles. All work by same method of removing old line drawing using prev_pixels snapshot
+ - and then redrawing the shape each frame
+ - Moved process_input out of main and into input.h/c since I felt it was more appropriate
+ - Add max/min functions for signed/unsigned integers and made all of the maths helpers inline

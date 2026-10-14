@@ -132,6 +132,7 @@ void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *
                 draw_shape(ih, c, &canvas_draw_empty_rect, &canvas_draw_empty_rect);
                 break;
             }
+            // Only draw filled rect at the end to match Aesprite functionality
             case BUTTON_FILLED_RECT: {
                 draw_shape(ih, c, &canvas_draw_empty_rect, &canvas_draw_filled_rect);
                 break;
@@ -140,6 +141,7 @@ void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *
                 draw_shape(ih, c, &canvas_draw_empty_circle, &canvas_draw_empty_circle);
                 break;
             }
+            // Only draw filled circle at the end to match Aesprite functionality
             case BUTTON_FILLED_CIRCLE: {
                 draw_shape(ih, c, &canvas_draw_empty_circle, &canvas_draw_filled_circle);
                 break;
