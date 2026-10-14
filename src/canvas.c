@@ -1,5 +1,6 @@
 #include "canvas.h"
 #include "math_utils.h"
+#include <math.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
@@ -183,12 +184,78 @@ void canvas_draw_empty_rect(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32
     }
 }
 
-void canvas_draw_filled_circle(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py) {
+static void circle_plot(Canvas *c, int32_t x, int32_t y, uint32_t colour, int restore) {
+    if (x < 0 || y < 0 || x >= (int32_t)c->width || y >= (int32_t)c->height) return;
+    canvas_set_pixel(c, x, y, restore ? c->prev_pixels[(size_t)y * c->width + x] : colour);
+}
 
+static void circle_points(Canvas *c, int32_t cx, int32_t cy, int32_t x, int32_t y,
+                          uint32_t colour, int restore) {
+    circle_plot(c, cx + x, cy + y, colour, restore);
+    circle_plot(c, cx - x, cy + y, colour, restore);
+    circle_plot(c, cx + x, cy - y, colour, restore);
+    circle_plot(c, cx - x, cy - y, colour, restore);
+    if (x != y) {
+        circle_plot(c, cx + y, cy + x, colour, restore);
+        circle_plot(c, cx - y, cy + x, colour, restore);
+        circle_plot(c, cx + y, cy - x, colour, restore);
+        circle_plot(c, cx - y, cy - x, colour, restore);
+    }
+}
+
+static void empty_circle_pass(Canvas *c, int32_t cx, int32_t cy, int32_t r, uint32_t colour, int restore) {
+    if (r <= 0) { circle_plot(c, cx, cy, colour, restore); return; }
+
+    int32_t x = r, y = 0, p = 1 - r;
+    circle_points(c, cx, cy, x, y, colour, restore);   // axis points
+
+    while (x > y) {
+        y++;
+        if (p <= 0) p += 2 * y + 1;
+        else { x--; p += 2 * y - 2 * x + 1; }
+        if (x < y) break;
+        circle_points(c, cx, cy, x, y, colour, restore);
+    }
+}
+
+static int32_t dist_i32(int32_t dx, int32_t dy) {
+    return (int32_t)lround(sqrt((double)dx * dx + (double)dy * dy));
 }
 
 void canvas_draw_empty_circle(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py) {
+    if (c->shape_x >= c->width || c->shape_y >= c->height) return;
 
+    int32_t sx = (int32_t)c->shape_x;
+    int32_t sy = (int32_t)c->shape_y;
+
+    empty_circle_pass(c, sx, sy, dist_i32(px - sx, py - sy), 0, 1);           // undo last frame
+    empty_circle_pass(c, sx, sy, dist_i32(ex - sx, ey - sy), UINT32_MAX, 0);  // draw this frame
+}
+
+static void filled_circle_pass(Canvas *c, int32_t cx, int32_t cy, int32_t r, uint32_t colour, int restore) {
+    if (r <= 0) { circle_plot(c, cx, cy, colour, restore); return; }
+    int32_t sr = r * r;
+
+    for(int32_t y = 0; y <= r; y++) {
+        for(int32_t x = 0; x <= r; x++) {
+            if(y * y + x * x <= sr) {
+                circle_plot(c, cx + x, cy + y, colour, restore);
+                if (x) circle_plot(c, cx - x, cy + y, colour, restore);
+                if (y) circle_plot(c, cx + x, cy - y, colour, restore);
+                if (x && y) circle_plot(c, cx - x, cy - y, colour, restore);
+            }
+        }
+    }
+}
+
+void canvas_draw_filled_circle(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py) {
+    if (c->shape_x >= c->width || c->shape_y >= c->height) return;
+
+    int32_t sx = (int32_t)c->shape_x;
+    int32_t sy = (int32_t)c->shape_y;
+
+    filled_circle_pass(c, sx, sy, dist_i32(px - sx, py - sy), 0, 1);           // undo last frame
+    filled_circle_pass(c, sx, sy, dist_i32(ex - sx, ey - sy), UINT32_MAX, 0);  // draw this frame
 }
 
 void canvas_print(Canvas *c) {

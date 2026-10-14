@@ -162,9 +162,11 @@ void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *
                         break;
                     }
                     case KEY_PRESSED: {
+                        canvas_draw_empty_circle(c, sx, sy, px, py);
                         break;
                     }
                     case KEY_JUST_RELEASED: {
+                        canvas_draw_empty_circle(c, sx, sy, px, py);
                         canvas_end_shape(c);
                         break;
                     }
@@ -183,9 +185,11 @@ void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *
                         break;
                     }
                     case KEY_PRESSED: {
+                        canvas_draw_empty_circle(c, sx, sy, px, py);
                         break;
                     }
                     case KEY_JUST_RELEASED: {
+                        canvas_draw_filled_circle(c, sx, sy, px, py);
                         canvas_end_shape(c);
                         break;
                     }
