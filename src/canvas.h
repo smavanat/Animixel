@@ -12,13 +12,16 @@
 
 /// Struct that describes a drawing canvas
 typedef struct {
-    uint32_t *pixels; ///< Array holding the pixel data
-    BOB_Pixelbuffer_Handle pb; ///< Reference handle to the pixelbuffer that actually renders the canvas data to the screen
-    size_t width;   ///< Width of the canvas
-    size_t height;  ///< Height of the canvas
-    size_t scale;   ///< Scale factor of the canvas. Used when rendering
-    uint32_t origin_x; ///< Top left x coord
-    uint32_t origin_y; ///< Top left y coord
+    uint32_t *pixels;           ///< Array holding the pixel data
+    uint32_t *prev_pixels;      ///< Pixel data from before shape drawing started
+    BOB_Pixelbuffer_Handle pb;  ///< Reference handle to the pixelbuffer that actually renders the canvas data to the screen
+    size_t width;               ///< Width of the canvas
+    size_t height;              ///< Height of the canvas
+    size_t scale;               ///< Scale factor of the canvas. Used when rendering
+    uint32_t origin_x;          ///< Top left x coord
+    uint32_t origin_y;          ///< Top left y coord
+    uint32_t shape_x;           ///< X coord from where a shape drawing started
+    uint32_t shape_y;           ///< Y coord from where a shape drawing started
 } Canvas;
 
 /**
@@ -64,6 +67,14 @@ void canvas_set_pixel(Canvas *c, int32_t x, int32_t y, uint32_t colour);
  * @param colour the colour the line whould be drawn in
  */
 void canvas_bresenham(Canvas *c, int32_t sx, int32_t sy, int32_t ex, int32_t ey, uint32_t colour);
+void canvas_begin_shape(Canvas *c, int32_t sx, int32_t sy);
+void canvas_end_shape(Canvas *c);
+void canvas_draw_line(Canvas *c, int32_t sx, int32_t sy, int32_t px, int32_t py);
+void canvas_draw_filled_rect(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py);
+void canvas_draw_empty_rect(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py);
+void canvas_draw_filled_circle(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py);
+void canvas_draw_empty_circle(Canvas *c, int32_t ex, int32_t ey, int32_t px, int32_t py);
+
 /**
  * Prints the pixels array of the Canvas to the terminal. Used for debugging and
  * should not be used in production code

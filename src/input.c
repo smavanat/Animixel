@@ -1,4 +1,6 @@
 #include "input.h"
+#include "canvas.h"
+#include <stdint.h>
 
 void input_handler_init(Input_Handler *ih) {
     ih->mouse_x = 0;
@@ -55,22 +57,143 @@ void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *
         bs_manager->stb = (bs_manager->stb == BUTTON_EMPTY_CIRCLE) ? BUTTON_NONE : BUTTON_EMPTY_CIRCLE;
         update_sbp(bs_manager, BUTTON_EMPTY_CIRCLE);
     }
-    if((bs_manager->stb == BUTTON_DRAW || bs_manager->stb == BUTTON_ERASE) &&
-        (ih->key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED || ih->key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED)) {
-        int32_t ex = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
-        int32_t ey = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
-        int32_t sx = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
-        int32_t sy = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
 
-        // Check to make sure the mouse is actually in the canvas before drawing anything
-        if((ex >= 0 && ex < c->width && ey >= 0 && ey < c->height)) {
-            uint32_t colour = (bs_manager->stb == BUTTON_DRAW) ? UINT32_MAX : 0;
-            if(ih->key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED)
-                canvas_set_pixel(c, ex, ey, colour);
-            // Only use bresenham if the press was continuing from the previous frame
-            else if(ih->key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED) {
-                canvas_bresenham(c, sx, sy, ex, ey, colour);
+    if(ih->key_status[MOUSE_BUTTON_LEFT] != KEY_RELEASED) {
+        switch(bs_manager->stb) {
+            case BUTTON_DRAW:
+            case BUTTON_ERASE: {
+                if(ih->key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED || ih->key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED) {
+                    int32_t ex = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
+                    int32_t ey = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
+
+                    // Check to make sure the mouse is actually in the canvas before drawing anything
+                    if((ex >= 0 && ex < c->width && ey >= 0 && ey < c->height)) {
+                        uint32_t colour = (bs_manager->stb == BUTTON_DRAW) ? UINT32_MAX : 0;
+                        if(ih->key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED)
+                            canvas_set_pixel(c, ex, ey, colour);
+                        // Only use bresenham if the press was continuing from the previous frame
+                        else if(ih->key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED) {
+                            int32_t sx = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
+                            int32_t sy = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
+                            canvas_bresenham(c, sx, sy, ex, ey, colour);
+                        }
+                    }
+                }
+                break;
             }
+            case BUTTON_LINE: {
+                int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
+                int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
+                int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
+                int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
+                switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
+                    case KEY_JUST_PRESSED: {
+                        if(sx >= 0 && sx < c->width && sy >= 0 && sy < c->height)
+                            canvas_begin_shape(c, sx, sy);
+                        break;
+                    }
+                    case KEY_PRESSED: {
+                        canvas_draw_line(c, sx, sy, px, py);
+                        break;
+                    }
+                    case KEY_JUST_RELEASED: {
+                        canvas_draw_line(c, sx, sy, px, py);
+                        canvas_end_shape(c);
+                        break;
+                    }
+                    default: break;
+                }
+                break;
+            }
+            case BUTTON_EMPTY_RECT: {
+                int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
+                int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
+                int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
+                int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
+                switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
+                    case KEY_JUST_PRESSED: {
+                        canvas_begin_shape(c, sx, sy);
+                        break;
+                    }
+                    case KEY_PRESSED: {
+                        canvas_draw_empty_rect(c, sx, sy, px, py);
+                        break;
+                    }
+                    case KEY_JUST_RELEASED: {
+                        canvas_draw_empty_rect(c, sx, sy, px, py);
+                        canvas_end_shape(c);
+                        break;
+                    }
+                    default: break;
+                }
+                break;
+            }
+            case BUTTON_FILLED_RECT: {
+                int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
+                int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
+                int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
+                int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
+                switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
+                    case KEY_JUST_PRESSED: {
+                        canvas_begin_shape(c, sx, sy);
+                        break;
+                    }
+                    case KEY_PRESSED: {
+                        canvas_draw_empty_rect(c, sx, sy, px, py);
+                        break;
+                    }
+                    case KEY_JUST_RELEASED: {
+                        canvas_draw_filled_rect(c, sx, sy, px, py);
+                        canvas_end_shape(c);
+                        break;
+                    }
+                    default: break;
+                }
+                break;
+            }
+            case BUTTON_EMPTY_CIRCLE: {
+                int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
+                int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
+                int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
+                int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
+                switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
+                    case KEY_JUST_PRESSED: {
+                        canvas_begin_shape(c, sx, sy);
+                        break;
+                    }
+                    case KEY_PRESSED: {
+                        break;
+                    }
+                    case KEY_JUST_RELEASED: {
+                        canvas_end_shape(c);
+                        break;
+                    }
+                    default: break;
+                }
+                break;
+            }
+            case BUTTON_FILLED_CIRCLE: {
+                int32_t sx = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
+                int32_t sy = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
+                int32_t px = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
+                int32_t py = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
+                switch(ih->key_status[MOUSE_BUTTON_LEFT]) {
+                    case KEY_JUST_PRESSED: {
+                        canvas_begin_shape(c, sx, sy);
+                        break;
+                    }
+                    case KEY_PRESSED: {
+                        break;
+                    }
+                    case KEY_JUST_RELEASED: {
+                        canvas_end_shape(c);
+                        break;
+                    }
+                    default: break;
+                }
+                break;
+            }
+            default: break;
         }
     }
     // Need to set prev_x here so that it is based on the mouse position last frame not last event
