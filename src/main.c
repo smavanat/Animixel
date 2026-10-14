@@ -302,13 +302,39 @@ int init(GLFWwindow **window) {
 
 void process_input(GLFWwindow *window) {
     if(glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
-        if(handler.key_status[KEY_D] == KEY_JUST_PRESSED)
-            bs_manager.selected_toolbar_button = (bs_manager.selected_toolbar_button == BUTTON_DRAW) ? BUTTON_NONE : BUTTON_DRAW;
-        if(handler.key_status[KEY_E] == KEY_JUST_PRESSED)
-            bs_manager.selected_toolbar_button = (bs_manager.selected_toolbar_button == BUTTON_ERASE) ? BUTTON_NONE : BUTTON_ERASE;
-        if(handler.key_status[KEY_S] == KEY_JUST_PRESSED)
-            bs_manager.selected_toolbar_button = (bs_manager.selected_toolbar_button == BUTTON_SHAPE) ? BUTTON_NONE : BUTTON_SHAPE;
-        if((bs_manager.selected_toolbar_button == BUTTON_DRAW || bs_manager.selected_toolbar_button == BUTTON_ERASE) &&
+        if(handler.key_status[KEY_D] == KEY_JUST_PRESSED) {
+            bs_manager.stb = (bs_manager.stb == BUTTON_DRAW) ? BUTTON_NONE : BUTTON_DRAW;
+            update_sbp(BUTTON_DRAW);
+        }
+        if(handler.key_status[KEY_E] == KEY_JUST_PRESSED) {
+            bs_manager.stb = (bs_manager.stb == BUTTON_ERASE) ? BUTTON_NONE : BUTTON_ERASE;
+            update_sbp(BUTTON_ERASE);
+        }
+        if(handler.key_status[KEY_S] == KEY_JUST_PRESSED) {
+            bs_manager.stb = (bs_manager.stb == BUTTON_SHAPE) ? BUTTON_NONE : BUTTON_SHAPE;
+            update_sbp(BUTTON_SHAPE);
+        }
+        if(handler.key_status[KEY_L] == KEY_JUST_PRESSED) {
+            bs_manager.stb = (bs_manager.stb == BUTTON_LINE) ? BUTTON_NONE : BUTTON_LINE;
+            update_sbp(BUTTON_LINE);
+        }
+        if(handler.key_status[KEY_R] == KEY_JUST_PRESSED) {
+            bs_manager.stb = (bs_manager.stb == BUTTON_FILLED_RECT) ? BUTTON_NONE : BUTTON_FILLED_RECT;
+            update_sbp(BUTTON_FILLED_RECT);
+        }
+        if(handler.key_status[KEY_T] == KEY_JUST_PRESSED) {
+            bs_manager.stb = (bs_manager.stb == BUTTON_EMPTY_RECT) ? BUTTON_NONE : BUTTON_EMPTY_RECT;
+            update_sbp(BUTTON_EMPTY_RECT);
+        }
+        if(handler.key_status[KEY_C] == KEY_JUST_PRESSED) {
+            bs_manager.stb = (bs_manager.stb == BUTTON_FILLED_CIRCLE) ? BUTTON_NONE : BUTTON_FILLED_CIRCLE;
+            update_sbp(BUTTON_FILLED_CIRCLE);
+        }
+        if(handler.key_status[KEY_V] == KEY_JUST_PRESSED) {
+            bs_manager.stb = (bs_manager.stb == BUTTON_EMPTY_CIRCLE) ? BUTTON_NONE : BUTTON_EMPTY_CIRCLE;
+            update_sbp(BUTTON_EMPTY_CIRCLE);
+        }
+        if((bs_manager.stb == BUTTON_DRAW || bs_manager.stb == BUTTON_ERASE) &&
             (handler.key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED || handler.key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED)) {
             int32_t ex = (int32_t)(handler.mouse_x / c.scale) - (int32_t)c.origin_x;
             int32_t ey = (int32_t)(handler.mouse_y / c.scale) - (int32_t)c.origin_y;
@@ -317,7 +343,7 @@ void process_input(GLFWwindow *window) {
 
             // Check to make sure the mouse is actually in the canvas before drawing anything
             if((ex >= 0 && ex < c.width && ey >= 0 && ey < c.height)) {
-                uint32_t colour = (bs_manager.selected_toolbar_button == BUTTON_DRAW) ? UINT32_MAX : 0;
+                uint32_t colour = (bs_manager.stb == BUTTON_DRAW) ? UINT32_MAX : 0;
                 canvas_set_pixel(&c, ex, ey, colour);
 
                 // Only use bresenham if the press was continuing from the previous frame

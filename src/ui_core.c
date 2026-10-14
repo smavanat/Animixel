@@ -18,15 +18,29 @@ const Clay_Color COLOUR_ORANGE = (Clay_Color){255, 138, 50, 255};
 //===..................................... UI STATE MANAGEMENT .......................................===
 void button_state_manager_init(Button_State_Manager *bs) {
     // memset(bs->buttons, 0, sizeof(bs->buttons));
-    bs->selected_toolbar_button = BUTTON_NONE;
-    bs->selected_menu_button = BUTTON_NONE;
+    bs->stb = BUTTON_NONE;
+    bs->smb = BUTTON_NONE;
+    bs->sbp = CLAY_STRING("S");
+}
+
+void update_sbp(Button_Type t) {
+    switch(t) {
+        case BUTTON_LINE: bs_manager.sbp = CLAY_STRING("L"); break;
+        case BUTTON_EMPTY_RECT: bs_manager.sbp = CLAY_STRING("ER"); break;
+        case BUTTON_FILLED_RECT: bs_manager.sbp = CLAY_STRING("FR"); break;
+        case BUTTON_EMPTY_CIRCLE: bs_manager.sbp = CLAY_STRING("EC"); break;
+        case BUTTON_FILLED_CIRCLE: bs_manager.sbp = CLAY_STRING("FC"); break;
+        default: bs_manager.sbp = CLAY_STRING("S"); break;
+    }
 }
 
 void set_toolbar_button_pressed_cb(Clay_ElementId id, Clay_PointerData info, void *userData) {
     if(info.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME) {
         Button_Type t = (intptr_t)userData;
         // Double clicking on a button should turn it off
-        bs_manager.selected_toolbar_button = (t == bs_manager.selected_toolbar_button) ? BUTTON_NONE : t;
+        bs_manager.stb = (t == bs_manager.stb) ? BUTTON_NONE : t;
+
+        update_sbp(t);
     }
 }
 
@@ -35,9 +49,12 @@ void set_toolbar_button_pressed_cb(Clay_ElementId id, Clay_PointerData info, voi
 void create_static_button(Button_Type type, uint32_t width, uint32_t height, uint8_t padding, Clay_Color hover_colour,
                           Clay_Color basic_colour, Clay_String text, void (*button_handler)(Clay_ElementId id,
                           Clay_PointerData info, void *userData), void *userData) {
+    uint8_t border = (bs_manager.stb == type) || (type == BUTTON_SHAPE &&
+        (bs_manager.stb == BUTTON_LINE || bs_manager.stb == BUTTON_EMPTY_RECT || bs_manager.stb == BUTTON_FILLED_RECT
+        || bs_manager.stb == BUTTON_EMPTY_CIRCLE || bs_manager.stb == BUTTON_FILLED_CIRCLE));
     CLAY(CLAY_IDI("Button", type), {.layout = {.sizing = {CLAY_SIZING_FIXED(width), CLAY_SIZING_FIXED(height)},
          .padding = CLAY_PADDING_ALL(padding), .childAlignment = {CLAY_ALIGN_X_CENTER, CLAY_ALIGN_Y_CENTER} },
-         .backgroundColor = Clay_Hovered() ? hover_colour : basic_colour, .border = (bs_manager.selected_toolbar_button == type)
+         .backgroundColor = Clay_Hovered() ? hover_colour : basic_colour, .border = border
          ? (Clay_BorderElementConfig){COLOUR_BLACK, 2} : (Clay_BorderElementConfig){}}) {
         Clay_OnHover(button_handler, userData);
 
@@ -218,7 +235,18 @@ Clay_RenderCommandArray editor_layout(float dt, Custom_Element_Data *canvas) {
                 .childGap = 8, .padding = CLAY_PADDING_ALL(4), .childAlignment = {CLAY_ALIGN_X_RIGHT, CLAY_ALIGN_Y_CENTER}}, .backgroundColor = COLOUR_RED}) {
                 create_static_button(BUTTON_DRAW, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("D"), set_toolbar_button_pressed_cb, (void *)BUTTON_DRAW);
                 create_static_button(BUTTON_ERASE, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("E"), set_toolbar_button_pressed_cb, (void *)BUTTON_ERASE);
-                create_static_button(BUTTON_SHAPE, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("S"), set_toolbar_button_pressed_cb, (void *)BUTTON_SHAPE);
+                create_static_button(BUTTON_SHAPE, 36, 36, 4, COLOUR_LIGHT, COLOUR_ORANGE, bs_manager.sbp, set_toolbar_button_pressed_cb, (void *)BUTTON_SHAPE);
+            }
+            if(bs_manager.stb == BUTTON_SHAPE) {
+                CLAY(CLAY_ID("ShapeOptions"),{.layout = {.layoutDirection = CLAY_LEFT_TO_RIGHT, .childGap = 2, .padding = CLAY_PADDING_ALL(2)},
+                     .floating = {.parentId = CLAY_IDI("Button", BUTTON_SHAPE).id, .attachTo = CLAY_ATTACH_TO_ELEMENT_WITH_ID, .zIndex = 20,
+                     .attachPoints = {.element = CLAY_ATTACH_POINT_RIGHT_CENTER, .parent = CLAY_ATTACH_POINT_LEFT_CENTER}}, .backgroundColor = COLOUR_RED}) {
+                    create_static_button(BUTTON_LINE, 32, 32, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("L"), set_toolbar_button_pressed_cb, (void *)BUTTON_LINE);
+                    create_static_button(BUTTON_EMPTY_RECT, 32, 32, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("ER"), set_toolbar_button_pressed_cb, (void *)BUTTON_EMPTY_RECT);
+                    create_static_button(BUTTON_FILLED_RECT, 32, 32, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("FR"), set_toolbar_button_pressed_cb, (void *)BUTTON_FILLED_RECT);
+                    create_static_button(BUTTON_EMPTY_CIRCLE, 32, 32, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("EC"), set_toolbar_button_pressed_cb, (void *)BUTTON_EMPTY_CIRCLE);
+                    create_static_button(BUTTON_FILLED_CIRCLE, 32, 32, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("FC"), set_toolbar_button_pressed_cb, (void *)BUTTON_FILLED_CIRCLE);
+                }
             }
         }
     }

@@ -7,6 +7,7 @@
 
 #include <bob.h>
 #include <clay.h>
+#include <stdint.h>
 #include "canvas.h"
 #include "input.h"
 
@@ -40,6 +41,11 @@ typedef enum {
     BUTTON_ERASE,
     BUTTON_SHAPE,
     BUTTON_FILE,
+    BUTTON_LINE,
+    BUTTON_EMPTY_RECT,
+    BUTTON_FILLED_RECT,
+    BUTTON_EMPTY_CIRCLE,
+    BUTTON_FILLED_CIRCLE,
     BUTTON_NONE,
     NUM_BUTTONS
 } Button_Type;
@@ -47,8 +53,9 @@ typedef enum {
 /// Struct to manage the state of all the buttons similar to Input_Handler
 typedef struct {
     // Button_State buttons[NUM_BUTTONS];
-    Button_Type selected_toolbar_button;
-    Button_Type selected_menu_button;
+    Button_Type stb; ///< Selected toolbar button
+    Button_Type smb; ///< Selected menu button
+    Clay_String sbp; ///< Shape button pressed
 } Button_State_Manager;
 
 extern Button_State_Manager bs_manager; //> Manages UI bs
@@ -58,6 +65,7 @@ extern Button_State_Manager bs_manager; //> Manages UI bs
  * @param bs a pointer to the Button_State_Manager to initialise
  */
 void button_state_manager_init(Button_State_Manager *bs);
+void update_sbp(Button_Type t);
 
 /**
  * Creates a clay button widget whose size does not change
