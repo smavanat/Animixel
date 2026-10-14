@@ -5,6 +5,8 @@
 
 #ifndef __INPUT_H__
 #define __INPUT_H__
+#include <clay.h>
+#include "canvas.h"
 
 /// Enum to hold the state of the keys
 typedef enum {
@@ -71,6 +73,29 @@ typedef struct {
     double scroll_y; ///< Mouse vertical scroll in the current frame
 } Input_Handler;
 
+/// Enum to hold the different buttons
+typedef enum {
+    BUTTON_DRAW,
+    BUTTON_ERASE,
+    BUTTON_SHAPE,
+    BUTTON_FILE,
+    BUTTON_LINE,
+    BUTTON_EMPTY_RECT,
+    BUTTON_FILLED_RECT,
+    BUTTON_EMPTY_CIRCLE,
+    BUTTON_FILLED_CIRCLE,
+    BUTTON_NONE,
+    NUM_BUTTONS
+} Button_Type;
+
+/// Struct to manage the state of all the buttons similar to Input_Handler
+typedef struct {
+    // Button_State buttons[NUM_BUTTONS];
+    Button_Type stb; ///< Selected toolbar button
+    Button_Type smb; ///< Selected menu button
+    Clay_String sbp; ///< Shape button pressed
+} Button_State_Manager;
+
 /**
  * Initialises an Input_Handler.
  * Sets the initial cursor position to (0, 0) and all of the keys to KEY_RELEASED
@@ -93,5 +118,9 @@ void update_key_state(Input_Handler *ih);
  * @return 1 if the cursor is in the bounds of the window, 0 otherwise
  */
 int cursor_in_bounds(Input_Handler *ih, float min_x, float min_y, float max_x, float max_y);
+
+void button_state_manager_init(Button_State_Manager *bs);
+void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *c);
+void update_sbp(Button_State_Manager *bs_manager, Button_Type t);
 
 #endif

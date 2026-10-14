@@ -19,6 +19,8 @@ typedef enum {
     CUSTOM_ELEMENT_TYPE_CANVAS,
 } Custom_Element_Type;
 
+extern Button_State_Manager bs_manager; //> Manages UI bs
+
 /// Struct used to hold the data of a Clay custom element
 /// as a tagged union. All of the union elements are pointers
 /// to maintain a consistent struct size
@@ -35,37 +37,12 @@ typedef enum {
     BUTTON_DOWN,
 } Button_State;
 
-/// Enum to hold the different buttons
-typedef enum {
-    BUTTON_DRAW,
-    BUTTON_ERASE,
-    BUTTON_SHAPE,
-    BUTTON_FILE,
-    BUTTON_LINE,
-    BUTTON_EMPTY_RECT,
-    BUTTON_FILLED_RECT,
-    BUTTON_EMPTY_CIRCLE,
-    BUTTON_FILLED_CIRCLE,
-    BUTTON_NONE,
-    NUM_BUTTONS
-} Button_Type;
-
-/// Struct to manage the state of all the buttons similar to Input_Handler
-typedef struct {
-    // Button_State buttons[NUM_BUTTONS];
-    Button_Type stb; ///< Selected toolbar button
-    Button_Type smb; ///< Selected menu button
-    Clay_String sbp; ///< Shape button pressed
-} Button_State_Manager;
-
-extern Button_State_Manager bs_manager; //> Manages UI bs
-
 /**
  * Initialises a Button_State_Manager by setting each button to have state BUTTON_UP
  * @param bs a pointer to the Button_State_Manager to initialise
  */
-void button_state_manager_init(Button_State_Manager *bs);
-void update_sbp(Button_Type t);
+// void button_state_manager_init(Button_State_Manager *bs);
+// void update_sbp(Button_Type t);
 
 /**
  * Creates a clay button widget whose size does not change

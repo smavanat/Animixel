@@ -22,3 +22,78 @@ int cursor_in_bounds(Input_Handler *ih, float min_x, float min_y, float max_x, f
     return 1;
 }
 
+void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *c) {
+    if(ih->key_status[KEY_D] == KEY_JUST_PRESSED) {
+        bs_manager->stb = (bs_manager->stb == BUTTON_DRAW) ? BUTTON_NONE : BUTTON_DRAW;
+        update_sbp(bs_manager, BUTTON_DRAW);
+    }
+    if(ih->key_status[KEY_E] == KEY_JUST_PRESSED) {
+        bs_manager->stb = (bs_manager->stb == BUTTON_ERASE) ? BUTTON_NONE : BUTTON_ERASE;
+        update_sbp(bs_manager, BUTTON_ERASE);
+    }
+    if(ih->key_status[KEY_S] == KEY_JUST_PRESSED) {
+        bs_manager->stb = (bs_manager->stb == BUTTON_SHAPE) ? BUTTON_NONE : BUTTON_SHAPE;
+        update_sbp(bs_manager, BUTTON_SHAPE);
+    }
+    if(ih->key_status[KEY_L] == KEY_JUST_PRESSED) {
+        bs_manager->stb = (bs_manager->stb == BUTTON_LINE) ? BUTTON_NONE : BUTTON_LINE;
+        update_sbp(bs_manager, BUTTON_LINE);
+    }
+    if(ih->key_status[KEY_R] == KEY_JUST_PRESSED) {
+        bs_manager->stb = (bs_manager->stb == BUTTON_FILLED_RECT) ? BUTTON_NONE : BUTTON_FILLED_RECT;
+        update_sbp(bs_manager, BUTTON_FILLED_RECT);
+    }
+    if(ih->key_status[KEY_T] == KEY_JUST_PRESSED) {
+        bs_manager->stb = (bs_manager->stb == BUTTON_EMPTY_RECT) ? BUTTON_NONE : BUTTON_EMPTY_RECT;
+        update_sbp(bs_manager, BUTTON_EMPTY_RECT);
+    }
+    if(ih->key_status[KEY_C] == KEY_JUST_PRESSED) {
+        bs_manager->stb = (bs_manager->stb == BUTTON_FILLED_CIRCLE) ? BUTTON_NONE : BUTTON_FILLED_CIRCLE;
+        update_sbp(bs_manager, BUTTON_FILLED_CIRCLE);
+    }
+    if(ih->key_status[KEY_V] == KEY_JUST_PRESSED) {
+        bs_manager->stb = (bs_manager->stb == BUTTON_EMPTY_CIRCLE) ? BUTTON_NONE : BUTTON_EMPTY_CIRCLE;
+        update_sbp(bs_manager, BUTTON_EMPTY_CIRCLE);
+    }
+    if((bs_manager->stb == BUTTON_DRAW || bs_manager->stb == BUTTON_ERASE) &&
+        (ih->key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED || ih->key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED)) {
+        int32_t ex = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
+        int32_t ey = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
+        int32_t sx = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
+        int32_t sy = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
+
+        // Check to make sure the mouse is actually in the canvas before drawing anything
+        if((ex >= 0 && ex < c->width && ey >= 0 && ey < c->height)) {
+            uint32_t colour = (bs_manager->stb == BUTTON_DRAW) ? UINT32_MAX : 0;
+            if(ih->key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED)
+                canvas_set_pixel(c, ex, ey, colour);
+            // Only use bresenham if the press was continuing from the previous frame
+            else if(ih->key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED) {
+                canvas_bresenham(c, sx, sy, ex, ey, colour);
+            }
+        }
+    }
+    // Need to set prev_x here so that it is based on the mouse position last frame not last event
+    // (otherwise will get incomplete lines from Bresenham)
+    ih->prev_x = ih->mouse_x;
+    ih->prev_y = ih->mouse_y;
+}
+
+void button_state_manager_init(Button_State_Manager *bs) {
+    // memset(bs->buttons, 0, sizeof(bs->buttons));
+    bs->stb = BUTTON_NONE;
+    bs->smb = BUTTON_NONE;
+    bs->sbp = CLAY_STRING("S");
+}
+
+void update_sbp(Button_State_Manager *bs_manager, Button_Type t) {
+    switch(t) {
+        case BUTTON_LINE: bs_manager->sbp = CLAY_STRING("L"); break;
+        case BUTTON_EMPTY_RECT: bs_manager->sbp = CLAY_STRING("ER"); break;
+        case BUTTON_FILLED_RECT: bs_manager->sbp = CLAY_STRING("FR"); break;
+        case BUTTON_EMPTY_CIRCLE: bs_manager->sbp = CLAY_STRING("EC"); break;
+        case BUTTON_FILLED_CIRCLE: bs_manager->sbp = CLAY_STRING("FC"); break;
+        default: bs_manager->sbp = CLAY_STRING("S"); break;
+    }
+}
+

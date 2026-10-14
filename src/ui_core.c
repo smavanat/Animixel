@@ -16,31 +16,13 @@ const Clay_Color COLOUR_RED = (Clay_Color){168, 66, 28, 255};
 const Clay_Color COLOUR_ORANGE = (Clay_Color){255, 138, 50, 255};
 
 //===..................................... UI STATE MANAGEMENT .......................................===
-void button_state_manager_init(Button_State_Manager *bs) {
-    // memset(bs->buttons, 0, sizeof(bs->buttons));
-    bs->stb = BUTTON_NONE;
-    bs->smb = BUTTON_NONE;
-    bs->sbp = CLAY_STRING("S");
-}
-
-void update_sbp(Button_Type t) {
-    switch(t) {
-        case BUTTON_LINE: bs_manager.sbp = CLAY_STRING("L"); break;
-        case BUTTON_EMPTY_RECT: bs_manager.sbp = CLAY_STRING("ER"); break;
-        case BUTTON_FILLED_RECT: bs_manager.sbp = CLAY_STRING("FR"); break;
-        case BUTTON_EMPTY_CIRCLE: bs_manager.sbp = CLAY_STRING("EC"); break;
-        case BUTTON_FILLED_CIRCLE: bs_manager.sbp = CLAY_STRING("FC"); break;
-        default: bs_manager.sbp = CLAY_STRING("S"); break;
-    }
-}
-
 void set_toolbar_button_pressed_cb(Clay_ElementId id, Clay_PointerData info, void *userData) {
     if(info.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME) {
         Button_Type t = (intptr_t)userData;
         // Double clicking on a button should turn it off
         bs_manager.stb = (t == bs_manager.stb) ? BUTTON_NONE : t;
 
-        update_sbp(t);
+        update_sbp(&bs_manager, t);
     }
 }
 
