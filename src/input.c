@@ -1,5 +1,6 @@
 #include "input.h"
 #include "canvas.h"
+#include "ui_core.h"
 #include <stdint.h>
 
 void input_handler_init(Input_Handler *ih) {
@@ -100,22 +101,24 @@ static inline void draw_shape(Input_Handler *ih, Canvas *c, void (*draw_start)(C
 
 void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *c) {
     update_button_status(ih, bs_manager);
+    Key_State lmb_state = ih->key_status[MOUSE_BUTTON_LEFT];
 
-    if(ih->key_status[MOUSE_BUTTON_LEFT] != KEY_RELEASED) {
+    if(lmb_state != KEY_RELEASED) {
+        if(lmb_state == KEY_JUST_PRESSED) bs_manager->smb = BUTTON_NONE; // Reset menu button state TODO:Change this so its only reset if outside the tooltip region.
         switch(bs_manager->stb) {
             case BUTTON_DRAW:
             case BUTTON_ERASE: {
-                if(ih->key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED || ih->key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED) {
+                if(lmb_state == KEY_PRESSED || lmb_state == KEY_JUST_PRESSED) {
                     int32_t ex = (int32_t)(ih->mouse_x / c->scale) - (int32_t)c->origin_x;
                     int32_t ey = (int32_t)(ih->mouse_y / c->scale) - (int32_t)c->origin_y;
 
                     // Check to make sure the mouse is actually in the canvas before drawing anything
                     if((ex >= 0 && ex < c->width && ey >= 0 && ey < c->height)) {
                         uint32_t colour = (bs_manager->stb == BUTTON_DRAW) ? UINT32_MAX : 0;
-                        if(ih->key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED)
+                        if(lmb_state == KEY_JUST_PRESSED)
                             canvas_set_pixel(c, ex, ey, colour);
                         // Only use bresenham if the press was continuing from the previous frame
-                        else if(ih->key_status[MOUSE_BUTTON_LEFT] == KEY_PRESSED) {
+                        else if(lmb_state == KEY_PRESSED) {
                             int32_t sx = (int32_t)(ih->prev_x / c->scale) - (int32_t)c->origin_x;
                             int32_t sy = (int32_t)(ih->prev_y / c->scale) - (int32_t)c->origin_y;
                             canvas_bresenham(c, sx, sy, ex, ey, colour);
@@ -156,10 +159,10 @@ void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *
 }
 
 void button_state_manager_init(Button_State_Manager *bs) {
-    // memset(bs->buttons, 0, sizeof(bs->buttons));
     bs->stb = BUTTON_NONE;
     bs->smb = BUTTON_NONE;
     bs->sbp = CLAY_STRING("S");
+    bs->show_fe = 0;
 }
 
 void update_sbp(Button_State_Manager *bs_manager, Button_Type t) {

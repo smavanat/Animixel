@@ -17,8 +17,9 @@
 #define BOB_IMPLEMENTATION
 #include <bob.h>
 #include <GLFW/glfw3.h>
-#define STB_IMAGE_IMPLEMENTATION
+// #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include "file_io.h"
 #include <sys/time.h>
 
 #include "input.h"
@@ -325,6 +326,11 @@ uint32_t load_tex(char *path, BOB_Font_Handle font) {
 
 // TODO: SCREEN TEARING STILL HAPPENS AT TOP. NEED TO FIX
 int main(void) {
+    File_Explorer fe;
+    file_explorer_init(&fe, 20, 20);
+    for(size_t i = 0; i < fe.num_rows; i++) {
+        printf("%s, %hhu\n", fe.rows[i].file_name, fe.rows[i].is_dir);
+    }
     if(init(&window)) {
         printf("Initialised\n");
 
@@ -398,6 +404,7 @@ int main(void) {
         }
 
         canvas_free(&c);
+        file_explorer_free(&fe);
     }
     glfwTerminate();
     BOB_terminate();

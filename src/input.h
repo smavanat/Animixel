@@ -6,6 +6,7 @@
 #ifndef __INPUT_H__
 #define __INPUT_H__
 #include <clay.h>
+#include <stdint.h>
 #include "canvas.h"
 
 /// Enum to hold the state of the keys
@@ -14,7 +15,7 @@ typedef enum {
     KEY_PRESSED, ///< Held on from the previous frame
     KEY_RELEASED, ///< Not pressed
     KEY_JUST_RELEASED ///< Released the previous frame
-} keystate;
+} Key_State;
 
 /// Enum that holds all of the keys we currently want to work with
 typedef enum {
@@ -60,11 +61,11 @@ typedef enum {
     MOUSE_BUTTON_RIGHT,
     MOUSE_BUTTON_MIDDLE,
     NUM_KEYS
-} keys;
+} Keys;
 
 /// Struct that acts as input handling interface
 typedef struct {
-    keystate key_status[NUM_KEYS];  ///< Map that holds the state of all the current keys we care about
+    Key_State key_status[NUM_KEYS];  ///< Map that holds the state of all the current keys we care about
     double mouse_x;  ///< Mouse x position in the current frame
     double mouse_y;  ///< Mouse y position in the current frame
     double prev_x;   ///< Mouse x position in the previous frame
@@ -84,6 +85,8 @@ typedef enum {
     BUTTON_FILLED_RECT,     ///< Button to start drawing a filled rect
     BUTTON_EMPTY_CIRCLE,    ///< Button to start drawing an empty circle
     BUTTON_FILLED_CIRCLE,   ///< Button to start drawing a filled circle
+    BUTTON_LOAD_MENU,       ///< Button to open the file explorer in 'Load' mode
+    BUTTON_SAVE_MENU,       ///< Button to open the file explorer in 'Save' mode
     BUTTON_NONE,            ///< Sentinel value to represent no button selected
 } Button_Type;
 
@@ -93,6 +96,7 @@ typedef struct {
     Button_Type stb; ///< Selected toolbar button
     Button_Type smb; ///< Selected menu button
     Clay_String sbp; ///< Shape button pressed
+    uint8_t show_fe; ///< Should the file explorer be shown
 } Button_State_Manager;
 
 /**

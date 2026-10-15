@@ -1,5 +1,6 @@
 #include "ui_core.h"
 #include "canvas.h"
+#include "input.h"
 #include "math_utils.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -23,6 +24,14 @@ void set_toolbar_button_pressed_cb(Clay_ElementId id, Clay_PointerData info, voi
         bs_manager.stb = (t == bs_manager.stb) ? BUTTON_NONE : t;
 
         update_sbp(&bs_manager, t);
+    }
+}
+
+void set_menu_button_pressed_cb(Clay_ElementId id, Clay_PointerData info, void *userData) {
+    if(info.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME) {
+        Button_Type t = (intptr_t)userData;
+        // Double clicking on a button should turn it off
+        bs_manager.smb = (t == bs_manager.stb) ? BUTTON_NONE : t;
     }
 }
 
@@ -206,7 +215,7 @@ Clay_RenderCommandArray editor_layout(float dt, Custom_Element_Data *canvas) {
     CLAY(CLAY_ID("OuterContainer"), {.layout = {.layoutDirection = CLAY_TOP_TO_BOTTOM, .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)}}}) {
         CLAY(CLAY_ID("MenuBar"), {.layout = {.layoutDirection = CLAY_LEFT_TO_RIGHT, .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(44)},
             .padding = CLAY_PADDING_ALL(4), .childAlignment = {.y = CLAY_ALIGN_Y_CENTER}}, .backgroundColor = COLOUR_RED}) {
-            create_static_button(BUTTON_FILE, 120, 36, 8, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("File"), NULL, NULL);
+            create_static_button(BUTTON_FILE, 120, 36, 8, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("File"), set_menu_button_pressed_cb, (void *)BUTTON_FILE);
         }
         CLAY(CLAY_ID("Editor"), {.layout = {.layoutDirection = CLAY_LEFT_TO_RIGHT, .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)}}}) {
             CLAY(CLAY_ID("CanvasContainer"), {.layout = {.sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)},
@@ -231,6 +240,15 @@ Clay_RenderCommandArray editor_layout(float dt, Custom_Element_Data *canvas) {
                     create_static_button(BUTTON_FILLED_RECT, 32, 32, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("FR"), set_toolbar_button_pressed_cb, (void *)BUTTON_FILLED_RECT);
                     create_static_button(BUTTON_EMPTY_CIRCLE, 32, 32, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("EC"), set_toolbar_button_pressed_cb, (void *)BUTTON_EMPTY_CIRCLE);
                     create_static_button(BUTTON_FILLED_CIRCLE, 32, 32, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("FC"), set_toolbar_button_pressed_cb, (void *)BUTTON_FILLED_CIRCLE);
+                }
+            }
+
+            if(bs_manager.smb == BUTTON_FILE) {
+                CLAY(CLAY_ID("FileMenu"),{.layout = {.layoutDirection = CLAY_TOP_TO_BOTTOM,/* .childGap = 2, .padding = CLAY_PADDING_ALL(2)*/},
+                     .floating = {.parentId = CLAY_IDI("Button", BUTTON_FILE).id, .attachTo = CLAY_ATTACH_TO_ELEMENT_WITH_ID, .zIndex = 20,
+                     .attachPoints = {.element = CLAY_ATTACH_POINT_LEFT_TOP, .parent = CLAY_ATTACH_POINT_LEFT_BOTTOM}}, .backgroundColor = COLOUR_RED}) {
+                    create_static_button(BUTTON_SAVE_MENU, 240, 32, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("SAVE"), NULL, NULL);
+                    create_static_button(BUTTON_LOAD_MENU, 240, 32, 4, COLOUR_LIGHT, COLOUR_ORANGE, CLAY_STRING("LOAD"), NULL, NULL);
                 }
             }
         }
