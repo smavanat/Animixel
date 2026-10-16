@@ -20,8 +20,8 @@
 // TODO: FILTER OUT ANYTHING THAT ISN'T JPEG/PNG/BMP or a folder
 void file_explorer_init(File_Explorer *fe, uint16_t max_rows, uint16_t max_str_len) {
     fe->num_rows = 0;
-    fe->max_rows = 0;
-    fe->max_str_len = 0;
+    fe->max_rows = max_rows;
+    fe->max_str_len = max_str_len;
     fe->rows = malloc(sizeof(File_Explorer_Row) * max_rows);
 
     // Directory opening and parsing code modified from here:
@@ -74,6 +74,7 @@ void file_explorer_free(File_Explorer *fe) {
     free(fe->rows);
 }
 
+// TODO: This function adds a new row even if the file is not being saved to cwd. Fix at a later date
 uint8_t file_explorer_save(File_Explorer *fe, const char *file_name, size_t strlen, uint8_t *data, int w, int h, int num_chnl) {
     if(strlen < 6) return 1; //Early exit if the filename is too short (max 4 chars for filetype, 1 for '.' and then at least one for the name)
 
@@ -82,6 +83,7 @@ uint8_t file_explorer_save(File_Explorer *fe, const char *file_name, size_t strl
     while(!found) {
         if(!strcmp(fe->rows[curr].file_name, file_name)) {
             found = 1;
+            if(fe->rows[curr].is_dir) fe->rows[curr].is_dir = 0;  // If a directory is the same name as the file being saved, reset it to a file
             break;
         }
         if(fe->rows[curr].next_idx == fe->used) break;

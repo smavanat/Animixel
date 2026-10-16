@@ -374,7 +374,9 @@ int main(void) {
 
             //Clear the screen
             clay_update_dimensions(&handler, dt, screen_width, screen_height);
-            Clay_RenderCommandArray render_commands = editor_layout(dt, &canvas_data);
+            Clay_RenderCommandArray render_commands = editor_layout(dt, &canvas_data, &fe);
+
+            if(handler.key_status[MOUSE_BUTTON_LEFT] == KEY_JUST_PRESSED && bs_manager.smb == BUTTON_FILE) bs_manager.smb = BUTTON_NONE; // Reset menu button state TODO:Change this so its only reset if outside the tooltip region.
 
             // Render code
             BOB_renderer_begin(r, (float[4]){1.0f, 0.0f, 1.0f, 1.0f});

@@ -104,7 +104,6 @@ void process_input(Input_Handler *ih, Button_State_Manager *bs_manager, Canvas *
     Key_State lmb_state = ih->key_status[MOUSE_BUTTON_LEFT];
 
     if(lmb_state != KEY_RELEASED) {
-        if(lmb_state == KEY_JUST_PRESSED) bs_manager->smb = BUTTON_NONE; // Reset menu button state TODO:Change this so its only reset if outside the tooltip region.
         switch(bs_manager->stb) {
             case BUTTON_DRAW:
             case BUTTON_ERASE: {
@@ -162,7 +161,7 @@ void button_state_manager_init(Button_State_Manager *bs) {
     bs->stb = BUTTON_NONE;
     bs->smb = BUTTON_NONE;
     bs->sbp = CLAY_STRING("S");
-    bs->show_fe = 0;
+    bs->fe_mode = 0;
 }
 
 void update_sbp(Button_State_Manager *bs_manager, Button_Type t) {

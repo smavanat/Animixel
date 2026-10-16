@@ -87,6 +87,10 @@ typedef enum {
     BUTTON_FILLED_CIRCLE,   ///< Button to start drawing a filled circle
     BUTTON_LOAD_MENU,       ///< Button to open the file explorer in 'Load' mode
     BUTTON_SAVE_MENU,       ///< Button to open the file explorer in 'Save' mode
+    BUTTON_LOAD,            ///< Button to load a file
+    BUTTON_SAVE,            ///< Button to save a file
+    BUTTON_DELTE,           ///< Button to delete a file
+    BUTTON_CLOSE,           ///< Generic button type used by all close buttons
     BUTTON_NONE,            ///< Sentinel value to represent no button selected
 } Button_Type;
 
@@ -96,7 +100,7 @@ typedef struct {
     Button_Type stb; ///< Selected toolbar button
     Button_Type smb; ///< Selected menu button
     Clay_String sbp; ///< Shape button pressed
-    uint8_t show_fe; ///< Should the file explorer be shown
+    Button_Type fe_mode; ///< Should the file explorer be shown
 } Button_State_Manager;
 
 /**

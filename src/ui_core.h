@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include "canvas.h"
 #include "input.h"
+#include "file_io.h"
 
 /// Global currently used to store the bitmap font used for text rendering
 extern BOB_Font_Handle bitmap; //TODO: Replace this with something else so we can use different font sizes for different widgets
@@ -90,6 +91,6 @@ void clay_free();
  * @param canvas a pointer to the Custom_Element_Data holding the render data for the canvas
  * @return a Clay_RenderCommandArray that holds all the draw commands for this layout
  */
-Clay_RenderCommandArray editor_layout(float dt, Custom_Element_Data *canvas);
+Clay_RenderCommandArray editor_layout(float dt, Custom_Element_Data *canvas, File_Explorer *fe);
 
 #endif // UI_CORE_H
